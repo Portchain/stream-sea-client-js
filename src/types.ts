@@ -3,8 +3,9 @@
 export interface Remote {
   appId: string;
   appSecret: string;
-  remoteServerHost: string; // Must include protocol e.g. 'http://' or 'https://'
+  remoteServerHost: string;
   remoteServerPort: string;
+  secure: boolean;
 }
 
 export interface Stream {

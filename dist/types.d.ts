@@ -3,6 +3,7 @@ export interface Remote {
     appSecret: string;
     remoteServerHost: string;
     remoteServerPort: string;
+    secure: boolean;
 }
 export interface Stream {
     stream: string;
