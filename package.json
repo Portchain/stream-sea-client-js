@@ -1,0 +1,22 @@
+{
+  "name": "stream-sea-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Proprietary - Portchain ApS",
+  "devDependencies": {
+    "typescript": "3.7.4"
+  },
+  "dependencies": {
+    "@types/request-promise-native": "^1.0.17",
+    "logacious": "^0.4.0",
+    "request-promise-native": "^1.0.8",
+    "ws": "^7.2.0"
+  }
+}
