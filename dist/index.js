@@ -83,19 +83,19 @@ class WSClient extends events_1.EventEmitter {
             const msgId = this.generateNextMessageId();
             this.messagesCallbacks.set(msgId, {
                 resolve,
-                reject
+                reject,
             });
             this.ws.send(JSON.stringify({
                 id: msgId,
                 action,
-                payload
+                payload,
             }));
         });
     }
     async authenticate(username, password) {
         const response = await this.send('authenticate', {
             username,
-            password
+            password,
         });
         if (response && response.jailId) {
             console.info('Authentication succeeded');
@@ -127,24 +127,24 @@ exports.subscribe = async (args) => {
     let client = new WSClient(args, async () => {
         //TODO: return th right event emitter instead of manually piping 2 event emitters
         const ee = await client.subscribe(args.stream);
-        ee.on('message', (d) => eventEmitter.emit('message', d));
-        ee.on('error', (d) => eventEmitter.emit('error', d));
-        ee.on('close', (d) => eventEmitter.emit('close', d));
+        ee.on('message', d => eventEmitter.emit('message', d));
+        ee.on('error', d => eventEmitter.emit('error', d));
+        ee.on('close', d => eventEmitter.emit('close', d));
     });
     return eventEmitter;
 };
-const getURLScheme = (secure) => secure ? 'https' : 'http';
+const getURLScheme = (secure) => (secure ? 'https' : 'http');
 exports.publish = async (args) => {
     return await request_promise_native_1.default({
         url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/publish`,
         headers: {
             'content-type': 'application/json',
-            'authorization': 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64')
+            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
         },
         method: 'POST',
         gzip: true,
         json: true,
-        body: { payload: args.payload }
+        body: { payload: args.payload },
     });
 };
 exports.defineStream = async (args) => {
@@ -152,12 +152,12 @@ exports.defineStream = async (args) => {
         url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/define`,
         headers: {
             'content-type': 'application/json',
-            'authorization': 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64')
+            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
         },
         method: 'POST',
         gzip: true,
         json: true,
-        body: { version: args.version, fields: args.fields }
+        body: { version: args.version, fields: args.fields },
     });
 };
 exports.describeStream = async (args) => {
@@ -165,11 +165,11 @@ exports.describeStream = async (args) => {
         url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
         headers: {
             'content-type': 'application/json',
-            'authorization': 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64')
+            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
         },
         method: 'GET',
         gzip: true,
-        json: true
+        json: true,
     };
     return await request_promise_native_1.default(a);
 };
@@ -178,12 +178,12 @@ exports.createClient = async (args) => {
         url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
         headers: {
             'content-type': 'application/json',
-            'authorization': 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64')
+            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
         },
         method: 'POST',
         gzip: true,
         json: true,
-        body: { description: args.description }
+        body: { description: args.description },
     });
 };
 exports.deleteClient = async (args) => {
@@ -191,11 +191,11 @@ exports.deleteClient = async (args) => {
         url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
         headers: {
             'content-type': 'application/json',
-            'authorization': 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64')
+            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
         },
         method: 'DELETE',
         gzip: true,
-        json: true
+        json: true,
     });
 };
 exports.rotateClientSecret = async (args) => {
@@ -203,10 +203,10 @@ exports.rotateClientSecret = async (args) => {
         url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
         headers: {
             'content-type': 'application/json',
-            'authorization': 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64')
+            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
         },
         method: 'PUT',
         gzip: true,
-        json: true
+        json: true,
     });
 };

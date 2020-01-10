@@ -28,10 +28,10 @@ export declare type SchemaField = {
     name: string;
     type: FieldType.ENUM;
     enum: string[];
-} | {
+} | ({
     name: string;
     type: FieldType.OBJECT | FieldType.OBJECT_ARRAY;
-} & Schema;
+} & Schema);
 export interface Schema {
     fields: SchemaField[];
 }

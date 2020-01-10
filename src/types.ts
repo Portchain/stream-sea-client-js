@@ -1,15 +1,13 @@
-
-
 export interface Remote {
-  appId: string;
-  appSecret: string;
-  remoteServerHost: string;
-  remoteServerPort: string;
-  secure: boolean;
+  appId: string
+  appSecret: string
+  remoteServerHost: string
+  remoteServerPort: string
+  secure: boolean
 }
 
 export interface Stream {
-  stream: string;
+  stream: string
 }
 
 export enum FieldType {
@@ -26,29 +24,20 @@ export enum FieldType {
   OBJECT_ARRAY = 'array<object>',
 }
 
-
 export type SchemaField =
   | {
       name: string
-      type:
-        | FieldType.STRING
-        | FieldType.FLOAT
-        | FieldType.INTEGER
-        | FieldType.DATE
-        | FieldType.STRING_ARRAY
-        | FieldType.FLOAT_ARRAY
-        | FieldType.INTEGER_ARRAY
-        | FieldType.DATE_ARRAY
+      type: FieldType.STRING | FieldType.FLOAT | FieldType.INTEGER | FieldType.DATE | FieldType.STRING_ARRAY | FieldType.FLOAT_ARRAY | FieldType.INTEGER_ARRAY | FieldType.DATE_ARRAY
     }
   | {
       name: string
       type: FieldType.ENUM
       enum: string[]
     }
-  | {
+  | ({
       name: string
       type: FieldType.OBJECT | FieldType.OBJECT_ARRAY
-    } & Schema
+    } & Schema)
 
 export interface Schema {
   fields: SchemaField[]
