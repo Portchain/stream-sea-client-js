@@ -23,6 +23,7 @@ interface PromiseProxy {
 interface WSClientArgs {
   remoteServerHost: string
   remoteServerPort: string
+  secure: boolean
   appId: string
   appSecret: string
 }
@@ -36,7 +37,7 @@ class WSClient extends EventEmitter {
 
   constructor(args: WSClientArgs, readyCb: () => void) {
     super()
-    const url = `ws://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams`
+    const url = `${getWsURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams`
     this.readyCb = readyCb
     this.ws = new WebSocket(url)
 
@@ -165,11 +166,12 @@ export const subscribe = async (args: Remote & Stream & { schema: SchemaDefiniti
   return eventEmitter
 }
 
-const getURLScheme = (secure: boolean) => (secure ? 'https' : 'http')
+const getHttpURLScheme = (secure: boolean) => (secure ? 'https' : 'http')
+const getWsURLScheme = (secure: boolean) => (secure ? 'wss' : 'ws')
 
 export const publish = async (args: Remote & Stream & { payload: any }) => {
   return await request({
-    url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/publish`,
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/publish`,
     headers: {
       'content-type': 'application/json',
       authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
@@ -183,7 +185,7 @@ export const publish = async (args: Remote & Stream & { payload: any }) => {
 
 export const defineStream = async (args: Remote & Stream & SchemaDefinition) => {
   return await request({
-    url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/define`,
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/define`,
     headers: {
       'content-type': 'application/json',
       authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
@@ -197,7 +199,7 @@ export const defineStream = async (args: Remote & Stream & SchemaDefinition) => 
 
 export const describeStream = async (args: Remote & Stream & SchemaDefinition) => {
   const a = {
-    url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
     headers: {
       'content-type': 'application/json',
       authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
@@ -211,7 +213,7 @@ export const describeStream = async (args: Remote & Stream & SchemaDefinition) =
 
 export const createClient = async (args: Remote & { description: string }) => {
   return await request({
-    url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
     headers: {
       'content-type': 'application/json',
       authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
@@ -225,7 +227,7 @@ export const createClient = async (args: Remote & { description: string }) => {
 
 export const deleteClient = async (args: Remote & { clientId: string }) => {
   return await request({
-    url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {
       'content-type': 'application/json',
       authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
@@ -238,7 +240,7 @@ export const deleteClient = async (args: Remote & { clientId: string }) => {
 
 export const rotateClientSecret = async (args: Remote & { clientId: string }) => {
   return await request({
-    url: `${getURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {
       'content-type': 'application/json',
       authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
