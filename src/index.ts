@@ -7,7 +7,7 @@ const logger = require('logacious')()
 const WebSocket = require('ws')
 /* tslint:enable */
 
-const PING_INTERVAL_MS = 15000
+const PING_INTERVAL_MS = 15000 // Interval for ping messages in milliseconds
 
 interface PromiseProxy {
   reject: (err: any) => void
