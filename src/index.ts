@@ -43,6 +43,14 @@ class WSClient extends EventEmitter {
     this.ws.on('open', async () => {
       console.log('Connected to server')
       await this.authenticate(args.appId, args.appSecret)
+      this.ws.heartbeatTimeout = setInterval(() => {
+        console.log('Ping')
+        this.ws.ping(() => {})
+      })
+    }, 10000)
+
+    this.ws.on('pong', () => {
+      console.log('Pong received')
     })
 
     this.ws.on('message', (msgStr: string) => {
