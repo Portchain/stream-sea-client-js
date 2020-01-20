@@ -38,7 +38,7 @@ class WSClient extends EventEmitter {
     this.ws.on('open', async () => {
       console.log('Connected to server')
       await this.authenticate(args.appId, args.appSecret)
-      this.ws.heartbeatTimeout = setInterval(() => {
+      this.ws.heartbeatInterval = setInterval(() => {
         this.ws.ping(() => {return;})
       }, PING_INTERVAL_MS)
     })
@@ -88,6 +88,12 @@ class WSClient extends EventEmitter {
       } catch (err) {
         logger.error(err)
         this.emit('error', err)
+      }
+    })
+
+    this.ws.on('close', () => {
+      if (this.ws.heartbeatInterval) {
+        clearInterval(this.ws.heartbeatInterval)
       }
     })
   }
