@@ -7,13 +7,7 @@ const logger = require('logacious')()
 const WebSocket = require('ws')
 /* tslint:enable */
 
-// private function setDefaultHeaders($curl) {
-//   curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-//     'Content-encoding: gzip',
-//     'Content-type: application/json',
-//     'Accept: application/json',
-//     'Authorization: Basic ' . base64_encode($this->appId . ':' . $this->appSecret)
-//   ));
+const PING_INTERVAL_MS = 15000
 
 interface PromiseProxy {
   reject: (err: any) => void
@@ -45,14 +39,11 @@ class WSClient extends EventEmitter {
       console.log('Connected to server')
       await this.authenticate(args.appId, args.appSecret)
       this.ws.heartbeatTimeout = setInterval(() => {
-        console.log('Ping')
-        this.ws.ping(() => {})
-      })
-    }, 10000)
-
-    this.ws.on('pong', () => {
-      console.log('Pong received')
+        this.ws.ping(() => {return;})
+      }, PING_INTERVAL_MS)
     })
+
+    this.ws.on('pong', () => {return;}) // TODO: add dropped connection detection
 
     this.ws.on('message', (msgStr: string) => {
       // TODO: catch parse error
