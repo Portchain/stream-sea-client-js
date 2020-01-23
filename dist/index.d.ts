@@ -1,9 +1,7 @@
 /// <reference types="node" />
 import { Stream, Remote, SchemaDefinition } from './types';
 import { EventEmitter } from 'events';
-export declare const subscribe: (args: Remote & Stream & {
-    schema: SchemaDefinition;
-}) => Promise<EventEmitter>;
+export declare const subscribe: (args: Remote & Stream) => Promise<EventEmitter>;
 export declare const publish: (args: Remote & Stream & {
     payload: any;
 }) => Promise<any>;

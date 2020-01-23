@@ -149,7 +149,7 @@ class WSClient extends EventEmitter {
   }
 }
 
-export const subscribe = async (args: Remote & Stream & { schema: SchemaDefinition }) => {
+export const subscribe = async (args: Remote & Stream) => {
   const eventEmitter = new EventEmitter()
 
   let client = new WSClient(args, async () => {
