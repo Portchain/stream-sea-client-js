@@ -8,6 +8,8 @@ const request_promise_native_1 = __importDefault(require("request-promise-native
 const events_1 = require("events");
 const logger = require('logacious')();
 const WebSocket = require('ws');
+/* tslint:enable */
+const PING_INTERVAL_MS = 15000; // Interval for ping messages in milliseconds
 class WSClient extends events_1.EventEmitter {
     constructor(args, readyCb) {
         super();
@@ -20,7 +22,11 @@ class WSClient extends events_1.EventEmitter {
         this.ws.on('open', async () => {
             console.log('Connected to server');
             await this.authenticate(args.appId, args.appSecret);
+            this.ws.heartbeatInterval = setInterval(() => {
+                this.ws.ping(() => { return; });
+            }, PING_INTERVAL_MS);
         });
+        this.ws.on('pong', () => { return; }); // TODO: add dropped connection detection
         this.ws.on('message', (msgStr) => {
             // TODO: catch parse error
             try {
@@ -71,6 +77,11 @@ class WSClient extends events_1.EventEmitter {
             catch (err) {
                 logger.error(err);
                 this.emit('error', err);
+            }
+        });
+        this.ws.on('close', () => {
+            if (this.ws.heartbeatInterval) {
+                clearInterval(this.ws.heartbeatInterval);
             }
         });
     }
