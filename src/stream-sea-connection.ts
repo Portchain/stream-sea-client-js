@@ -5,7 +5,6 @@ import { StreamSeaSocket, IStreamSeaSocket } from "./stream-sea-socket";
 const logger = require('logacious')()
 // States:
 //   init
-//   authenticating
 //   open
 //   closed
 
