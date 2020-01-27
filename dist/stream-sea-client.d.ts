@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
 import { IStreamSeaConnectionFactory } from "./stream-sea-connection";
-import { StreamSeaSubscription } from "./stream-sea-subscription";
+import { IStreamSeaSubscription } from "./stream-sea-subscription";
 interface StreamSeaClientOptions {
     remoteServerHost: string;
     remoteServerPort: string;
@@ -19,7 +19,7 @@ declare class StreamSeaClient extends EventEmitter {
     });
     private onClose;
     private reopenConnection;
-    addSubscription: (subscription: StreamSeaSubscription) => void;
+    addSubscription: (subscription: IStreamSeaSubscription) => void;
 }
 export declare const getStreamSeaClient: (options: StreamSeaClientOptions) => StreamSeaClient;
 export {};

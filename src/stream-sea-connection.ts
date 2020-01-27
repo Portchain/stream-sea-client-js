@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { StreamSeaSubscription } from "./stream-sea-subscription";
+import { IStreamSeaSubscription } from "./stream-sea-subscription";
 import { StreamSeaSocket, IStreamSeaSocket } from "./stream-sea-socket";
 const logger = require('logacious')()
 
@@ -27,7 +27,7 @@ interface PromiseProxy {
 }
 
 export interface IStreamSeaConnection extends EventEmitter {
-  addSubscription: (subscription: StreamSeaSubscription) => void
+  addSubscription: (subscription: IStreamSeaSubscription) => void
 }
 
 export interface StreamSeaConnectionOptions {
@@ -67,13 +67,13 @@ type CallbackRecord = SingleReplyCallbackRecord | MultiReplyCallbackRecord
  *   error
  * 
  * Public methods:
- *   addSubscription(subscription: StreamSeaSubscription) => void
+ *   addSubscription(subscription: IStreamSeaSubscription) => void
  */
 export class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
   private msgCnt: number = 0
   private status: StreamSeaConnectionStatus = StreamSeaConnectionStatus.init
   // Queue of subscribe requests that have not yet been sent to the server
-  private subscriptionsQueue: StreamSeaSubscription[] = []
+  private subscriptionsQueue: IStreamSeaSubscription[] = []
   private callbacksMap: Map<number, CallbackRecord> = new Map()
   private sss: IStreamSeaSocket
   private options: StreamSeaConnectionOptions
@@ -159,7 +159,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
     return ++this.msgCnt
   }
 
-  public addSubscription = (subscription: StreamSeaSubscription) => {
+  public addSubscription = (subscription: IStreamSeaSubscription) => {
     this.subscriptionsQueue.push(subscription)
     this.checkSubscriptionsQueue()
   }

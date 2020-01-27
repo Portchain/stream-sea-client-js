@@ -1,14 +1,17 @@
 import { EventEmitter } from "events";
 
-// States: <none>
+export interface IStreamSeaSubscription extends EventEmitter {
+  streamName: string
+}
 
-// Events:
-//   message
-
-// Public methods:
-// constructor(streamName: string)
-
-export class StreamSeaSubscription extends EventEmitter {
+/**
+ * A StreamSeaSubscription represents a long-lasting logical subscription.
+ * A StreamSeaSubscription may be transferred from one connection to another
+ * 
+ * Events:
+ *   message
+ */
+export class StreamSeaSubscription extends EventEmitter implements IStreamSeaSubscription {
   public streamName: string
   constructor(streamName: string){
     super()

@@ -29,7 +29,7 @@ var StreamSeaConnectionStatus;
  *   error
  *
  * Public methods:
- *   addSubscription(subscription: StreamSeaSubscription) => void
+ *   addSubscription(subscription: IStreamSeaSubscription) => void
  */
 class StreamSeaConnection extends events_1.EventEmitter {
     constructor(options) {
@@ -39,7 +39,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
         // Queue of subscribe requests that have not yet been sent to the server
         this.subscriptionsQueue = [];
         this.callbacksMap = new Map();
-        this.onWsOpen = () => {
+        this.onSocketOpen = () => {
             this.sendSingleReply('authenticate', {
                 username: this.options.appId,
                 password: this.options.appSecret,
@@ -52,7 +52,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
                 this.emit('error', err);
             });
         };
-        this.onWsMessage = (msgStr) => {
+        this.onSocketMessage = (msgStr) => {
             try {
                 const msg = JSON.parse(msgStr);
                 if (!msg.id) {
@@ -103,10 +103,10 @@ class StreamSeaConnection extends events_1.EventEmitter {
                 this.emit('error', err);
             }
         };
-        this.onWsClose = () => {
+        this.onSocketClose = () => {
             this.emit('close');
         };
-        this.onWsError = (e) => {
+        this.onSocketError = (e) => {
             this.emit('error', e);
         };
         this.addSubscription = (subscription) => {
@@ -115,23 +115,26 @@ class StreamSeaConnection extends events_1.EventEmitter {
         };
         this.options = options;
         this.sss = new stream_sea_socket_1.StreamSeaSocket(options.url); // TODO: use factory method
-        this.sss.on('open', this.onWsOpen);
-        this.sss.on('message', this.onWsMessage);
-        this.sss.on('close', this.onWsClose);
-        this.sss.on('error', this.onWsError);
+        this.sss.on('open', this.onSocketOpen);
+        this.sss.on('message', this.onSocketMessage);
+        this.sss.on('close', this.onSocketClose);
+        this.sss.on('error', this.onSocketError);
     }
     generateNextMessageId() {
         return ++this.msgCnt;
     }
+    /**
+     * Send out queued subscriptions if possible
+     */
     checkSubscriptionsQueue() {
         if (this.status === StreamSeaConnectionStatus.open) {
             for (const subscription = this.subscriptionsQueue.shift(); subscription;) {
                 this.sendMultiReply('subscribe', subscription.streamName, {
                     resolve: (m) => { return; },
-                    reject: (e) => this.onWsError(e),
+                    reject: (e) => this.onSocketError(e),
                 }, {
                     resolve: (m) => subscription.emit('message', m),
-                    reject: (e) => this.onWsError(e),
+                    reject: (e) => this.onSocketError(e),
                 });
             }
         }

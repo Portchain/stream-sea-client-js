@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
-// States: <none>
-// Events:
-//   message
-// Public methods:
-// constructor(streamName: string)
+/**
+ * A StreamSeaSubscription represents a long-lasting logical subscription.
+ * A StreamSeaSubscription may be transferred from one connection to another
+ *
+ * Events:
+ *   message
+ */
 class StreamSeaSubscription extends events_1.EventEmitter {
     constructor(streamName) {
         super();

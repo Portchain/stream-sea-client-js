@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
-import { StreamSeaConnection, IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionFactory } from "./stream-sea-connection";
-import { StreamSeaSubscription } from "./stream-sea-subscription";
+import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionFactory } from "./stream-sea-connection";
+import { IStreamSeaSubscription } from "./stream-sea-subscription";
 
 // Statuses:
 //   connecting
@@ -33,7 +33,7 @@ class StreamSeaClient extends EventEmitter {
   private status: StreamSeaClientStatus = StreamSeaClientStatus.connecting
   private options: StreamSeaClientOptions & {connectionFactory: IStreamSeaConnectionFactory}
   private connection: IStreamSeaConnection
-  private subscriptions: StreamSeaSubscription[] = []
+  private subscriptions: IStreamSeaSubscription[] = []
   constructor(options: StreamSeaClientOptions & {connectionFactory: IStreamSeaConnectionFactory}){
     super()
     this.options = options
@@ -61,7 +61,7 @@ class StreamSeaClient extends EventEmitter {
     // TODO: avoid code repetition
     this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription))
   }
-  public addSubscription = (subscription: StreamSeaSubscription) => {
+  public addSubscription = (subscription: IStreamSeaSubscription) => {
     this.subscriptions.push(subscription)
     this.connection.addSubscription(subscription)
   }

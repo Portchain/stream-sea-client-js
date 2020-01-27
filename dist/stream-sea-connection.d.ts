@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
-import { StreamSeaSubscription } from "./stream-sea-subscription";
+import { IStreamSeaSubscription } from "./stream-sea-subscription";
 export interface IStreamSeaConnectionFactory {
     createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection;
 }
@@ -12,7 +12,7 @@ export declare class StreamSeaConnectionFactory implements IStreamSeaConnectionF
     createConnection: (options: StreamSeaConnectionOptions) => StreamSeaConnection;
 }
 export interface IStreamSeaConnection extends EventEmitter {
-    addSubscription: (subscription: StreamSeaSubscription) => void;
+    addSubscription: (subscription: IStreamSeaSubscription) => void;
 }
 export interface StreamSeaConnectionOptions {
     url: string;
@@ -30,7 +30,7 @@ export interface StreamSeaConnectionOptions {
  *   error
  *
  * Public methods:
- *   addSubscription(subscription: StreamSeaSubscription) => void
+ *   addSubscription(subscription: IStreamSeaSubscription) => void
  */
 export declare class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
     private msgCnt;
@@ -40,12 +40,15 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
     private sss;
     private options;
     constructor(options: StreamSeaConnectionOptions);
-    private onWsOpen;
-    private onWsMessage;
-    private onWsClose;
-    private onWsError;
+    private onSocketOpen;
+    private onSocketMessage;
+    private onSocketClose;
+    private onSocketError;
     private generateNextMessageId;
-    addSubscription: (subscription: StreamSeaSubscription) => void;
+    addSubscription: (subscription: IStreamSeaSubscription) => void;
+    /**
+     * Send out queued subscriptions if possible
+     */
     private checkSubscriptionsQueue;
     /**
      * Send a message expecting a single reply
