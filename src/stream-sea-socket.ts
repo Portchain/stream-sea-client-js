@@ -7,6 +7,18 @@ export interface IStreamSeaSocket extends EventEmitter {
   send: (m: any) => void
 }
 
+/**
+ * A StreamSeaSocket encapsulates a WebSocket with automatic ping-pong.
+ * 
+ * Events:
+ *   open
+ *   message
+ *   close
+ *   error
+ * 
+ * Public methods:
+ *   send(message: string)
+ */
 export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
   private ws: WebSocket
   private heartbeatInterval?: NodeJS.Timeout
@@ -42,7 +54,7 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
     this.emit('error', e)
   }
 
-  public send = (m: any) => {
-    this.ws.send(m)
+  public send = (message: string) => {
+    this.ws.send(message)
   }
 }

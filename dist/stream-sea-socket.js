@@ -6,6 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = __importDefault(require("ws"));
 const events_1 = require("events");
 const PING_INTERVAL_MS = 15000; // Interval for ping messages in milliseconds
+/**
+ * A StreamSeaSocket encapsulates a WebSocket with automatic ping-pong.
+ *
+ * Events:
+ *   open
+ *   message
+ *   close
+ *   error
+ *
+ * Public methods:
+ *   send(message: string)
+ */
 class StreamSeaSocket extends events_1.EventEmitter {
     constructor(url) {
         super();
@@ -28,8 +40,8 @@ class StreamSeaSocket extends events_1.EventEmitter {
         this.onWsError = (e) => {
             this.emit('error', e);
         };
-        this.send = (m) => {
-            this.ws.send(m);
+        this.send = (message) => {
+            this.ws.send(message);
         };
         this.ws = new ws_1.default(url);
         this.ws.on('open', this.onWsOpen);

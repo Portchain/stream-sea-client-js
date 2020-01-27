@@ -19,11 +19,24 @@ export interface StreamSeaConnectionOptions {
     appId: string;
     appSecret: string;
 }
+/**
+ * A StreamSeaConnection gives a higher-level interface on top of StreamSeaSocket, taking
+ * care of authentication and subscription messages
+ *
+ * Events:
+ *   open
+ *   message
+ *   close
+ *   error
+ *
+ * Public methods:
+ *   addSubscription(subscription: StreamSeaSubscription) => void
+ */
 export declare class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
     private msgCnt;
     private status;
     private subscriptionsQueue;
-    private messageCallbacks;
+    private callbacksMap;
     private sss;
     private options;
     constructor(options: StreamSeaConnectionOptions);
@@ -34,6 +47,12 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
     private generateNextMessageId;
     addSubscription: (subscription: StreamSeaSubscription) => void;
     private checkSubscriptionsQueue;
+    /**
+     * Send a message expecting a single reply
+     */
     private sendSingleReply;
+    /**
+     * Send a message expecting multiple replies
+     */
     private sendMultiReply;
 }

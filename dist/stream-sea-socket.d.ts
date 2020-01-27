@@ -3,6 +3,18 @@ import { EventEmitter } from "events";
 export interface IStreamSeaSocket extends EventEmitter {
     send: (m: any) => void;
 }
+/**
+ * A StreamSeaSocket encapsulates a WebSocket with automatic ping-pong.
+ *
+ * Events:
+ *   open
+ *   message
+ *   close
+ *   error
+ *
+ * Public methods:
+ *   send(message: string)
+ */
 export declare class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
     private ws;
     private heartbeatInterval?;
@@ -11,5 +23,5 @@ export declare class StreamSeaSocket extends EventEmitter implements IStreamSeaS
     private onWsMessage;
     private onWsClose;
     private onWsError;
-    send: (m: any) => void;
+    send: (message: string) => void;
 }
