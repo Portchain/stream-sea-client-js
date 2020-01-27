@@ -3,8 +3,6 @@ import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionF
 import { IStreamSeaSubscription } from "./stream-sea-subscription";
 const logger = require('logacious')()
 
-const RECONNECT_INTERVAL_MS = 3000;
-
 const getWsURLScheme = (secure: boolean) => (secure ? 'wss' : 'ws')
 
 interface StreamSeaClientOptions {
@@ -16,6 +14,8 @@ interface StreamSeaClientOptions {
 }
 
 /**
+ * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
+ * 
  * Events:
  *   error
  * 
@@ -26,6 +26,8 @@ export class StreamSeaClient extends EventEmitter {
   private options: StreamSeaClientOptions & {connectionFactory: IStreamSeaConnectionFactory}
   private connection: IStreamSeaConnection
   private subscriptions: IStreamSeaSubscription[] = []
+  private RECONNECT_INTERVAL_MS = 3000;
+
   constructor(options: StreamSeaClientOptions & {connectionFactory: IStreamSeaConnectionFactory}){
     super()
     this.options = options
@@ -35,11 +37,11 @@ export class StreamSeaClient extends EventEmitter {
       appSecret: options.appSecret,
     })
     this.connection.on('close', this.onConnectionClose)
-    this.connection.on('error', e => console.error(e))
+    this.connection.on('error', e => logger.error(e))
   }
   private onConnectionClose = () => {
     logger.warn('StreamSeaClient: Connection closed')
-    setTimeout(this.reopenConnection, RECONNECT_INTERVAL_MS)
+    setTimeout(this.reopenConnection, this.RECONNECT_INTERVAL_MS)
   }
   private reopenConnection = () => {
     logger.warn('StreamSeaClient: Reopening connection')
@@ -49,7 +51,7 @@ export class StreamSeaClient extends EventEmitter {
       appSecret: this.options.appSecret,
     })
     this.connection.on('close', this.onConnectionClose)
-    this.connection.on('error', e => console.error(e))
+    this.connection.on('error', e => logger.error(e))
     // TODO: avoid code repetition
     this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription))
   }
