@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { StreamSeaSubscription } from "./stream-sea-subscription";
 import WebSocket from 'ws'
+import { StreamSeaSocket, IStreamSeaSocket } from "./stream-sea-socket";
 const logger = require('logacious')()
 // States:
 //   init
@@ -14,8 +15,6 @@ const logger = require('logacious')()
 
 // Public methods:
 //   addSubscription(streamName: string): IStreamSeaSubscription
-
-const PING_INTERVAL_MS = 15000 // Interval for ping messages in milliseconds
 
 // Factory methods
 
@@ -54,40 +53,51 @@ export interface StreamSeaConnectionOptions {
   appSecret: string
 }
 
-type WebSocketWithMaybeHeartbeat = WebSocket & {heartbeatInterval?: any}
 enum StreamSeaConnectionStatus {
   init = 'init',
   open = 'open',
   closed = 'closed',
 }
+
+interface SingleReplyMessageRecord {
+  type: 'SingleReply',
+  callback: PromiseProxy
+}
+
+interface MultiReplyMessageRecord {
+  type: 'MultiReply',
+  receivedReply: boolean,
+  subscribeCallback: PromiseProxy,
+  messageCallback: PromiseProxy,
+}
+
+type MessageRecord = SingleReplyMessageRecord | MultiReplyMessageRecord
+
 export class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
   private msgCnt: number = 0
   private status: StreamSeaConnectionStatus = StreamSeaConnectionStatus.init
-  private subscriptions: Array<{msgId: number | null, isReady: boolean; subscription: StreamSeaSubscription}> = []
-  private messagesCallbacks: Map<number, PromiseProxy | null> = new Map<number, PromiseProxy | null>()
-  private ws: WebSocketWithMaybeHeartbeat
+  private subscriptionsQueue: StreamSeaSubscription[] = []
+  private messageCallbacks: Map<number, MessageRecord> = new Map()
+  private sss: IStreamSeaSocket
   private options: StreamSeaConnectionOptions
   constructor(options: StreamSeaConnectionOptions){
     super()
     this.options = options
-    this.ws = new WebSocket(options.url)
-    this.ws.on('open', this.onWsOpen)
-    this.ws.on('message', this.onWsMessage)
-    this.ws.on('close', this.onWsClose)
-    this.ws.on('error', this.onWsError)
+    this.sss = new StreamSeaSocket(options.url) // TODO: use factory method
+    this.sss.on('open', this.onWsOpen)
+    this.sss.on('message', this.onWsMessage)
+    this.sss.on('close', this.onWsClose)
+    this.sss.on('error', this.onWsError)
   }
 
   private onWsOpen = () => {
-    this.ws.heartbeatInterval = setInterval(() => {
-      this.ws.ping(() => {return;})
-    }, PING_INTERVAL_MS)
-    
-    this.send('authenticate', {
+    this.sendSingleReply('authenticate', {
       username: this.options.appId,
       password: this.options.appSecret,
     })
     .then(() => {
       this.status = StreamSeaConnectionStatus.open
+      this.checkSubscriptionsQueue()
     })
     .catch(err => {
       this.emit('error', err)
@@ -101,37 +111,38 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
         const errMessage = `Server sends a message without an id ${JSON.stringify(msg)}`
         logger.error(errMessage)
         this.emit('error', errMessage)
-      } else {
-        if (this.messagesCallbacks.has(msg.id) && this.messagesCallbacks.get(msg.id) === null) {
-          if (msg.action === 'subscription') {
-            // logger.debug('Subscription related message')
-            const subscriptionRecord = this.subscriptions.find(s => s.msgId === msg.id)
-            if (subscriptionRecord) {
-              // logger.debug('Emitting message related to subscription', msg.id)
-              subscriptionRecord.subscription.emit('message', msg.payload)
-            } else {
-              const errMessage = `Could not resolve subscription related event to an existing subscription ${JSON.stringify(msg)}`
-              logger.error(errMessage)
-              this.emit('error', errMessage)
-            }
-          } else {
-            const errMessage = `Server sent multiple response for a request that has already been processed. Message: ${JSON.stringify(msg)}`
-            logger.error(errMessage)
-            this.emit('error', errMessage)
-          }
-        } else if (this.messagesCallbacks.get(msg.id)) {
-          const promiseProxy = this.messagesCallbacks.get(msg.id)!
+        return
+      }
+      if (!this.messageCallbacks.has(msg.id)) {
+        const errMessage = `Server sent a response but the message id could not be resolved to a request. Message: ${JSON.stringify(msg)}`
+        logger.error(errMessage)
+        this.emit('error', errMessage)
+        return
+      }
+      const callbackRecord: MessageRecord = this.messageCallbacks.get(msg.id)!
+      if (callbackRecord.type === 'SingleReply'){
+        const promiseProxy = callbackRecord.callback
+        if (msg.success) {
+          promiseProxy.resolve(msg.payload)
+        } else {
+          promiseProxy.reject(msg.error)
+        }
+        this.messageCallbacks.delete(msg.id)
+      } else if (callbackRecord.type === 'MultiReply'){
+        if (!callbackRecord.receivedReply) {
+          callbackRecord.receivedReply = true
+          const promiseProxy = callbackRecord.subscribeCallback
           if (msg.success) {
             promiseProxy.resolve(msg.payload)
           } else {
             promiseProxy.reject(msg.error)
           }
-          this.messagesCallbacks.set(msg.id, null)
         } else {
-          const errMessage = `Server sent a response but the message id could not be resolved to a request. Message: ${JSON.stringify(msg)}`
-          logger.error(errMessage)
-          this.emit('error', errMessage)
+          const promiseProxy = callbackRecord.messageCallback
+          promiseProxy.resolve(msg.payload)
         }
+      } else {
+        throw new Error('Not implemented')
       }
     } catch (err) {
       logger.error(err)
@@ -152,43 +163,68 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   }
 
   public addSubscription = (subscription: StreamSeaSubscription) => {
-    this.subscriptions.push({msgId: null, isReady: false, subscription})
+    this.subscriptionsQueue.push(subscription)
+    this.checkSubscriptionsQueue()
   }
 
-  // Must only be called when connection is established
-  // private async subscribe(streamName: string) {
-  //   logger.info(`Subscribing to stream ${streamName}`)
-    
-  //   // const subscriptionKey = await 
-  //   this.send('subscribe', streamName)
-  //   .then(subscriptionKey => {
-  //     const subscriptionRecord = this.subscriptions.find(s => s.subscription.streamName === streamName)
-  //     if (!subscriptionKey)
-  //     subscriptionRecord.isReady = true
-  //   })
-  //   if (subscriptionKey) {
-  //     this.subscriptions.set(subscriptionKey, eventEmitter)
-  //     return eventEmitter
-  //   } else {
-  //     throw new Error('Failed to subscribe')
-  //   }
-  // }
-
-  private async send(action: string, payload: any): Promise<any> {
-    // TODO: add message timeouts
-    return new Promise((resolve, reject) => {
-      const msgId = this.generateNextMessageId()
-      this.messagesCallbacks.set(msgId, {
-        resolve,
-        reject,
+  private checkSubscriptionsQueue(){
+    if (this.status === StreamSeaConnectionStatus.open) {
+      this.subscriptionsQueue.forEach(subscription => {
+        this.sendMultiReply(
+          'subscribe',
+          subscription.streamName,
+          {
+            resolve: (m: any) => {return;}, // Nothing to do for subscribe callback
+            reject: (e: any) => this.onWsError(e),
+          },
+          {
+            resolve: (m: any) => subscription.emit('message', m),
+            reject: (e: any) => this.onWsError(e),
+          },
+        )
       })
-      this.ws.send(
-        JSON.stringify({
-          id: msgId,
-          action,
-          payload,
-        })
-      )
+    }
+  }
+
+  private async sendSingleReply(action: string, payload: any): Promise<any> {
+    const msgId = this.generateNextMessageId()
+    this.sss.send(
+      JSON.stringify({
+        id: msgId,
+        action,
+        payload,
+      })
+    )
+    return new Promise((resolve, reject) => {
+      this.messageCallbacks.set(msgId, {
+        type: 'SingleReply',
+        callback: {
+          resolve,
+          reject,
+        },
+      })
+    })
+  }
+
+  private async sendMultiReply(
+    action: string,
+    payload: any,
+    subscribeCallback: PromiseProxy,
+    messageCallback: PromiseProxy,
+  ) {
+    const msgId = this.generateNextMessageId()
+    this.sss.send(
+      JSON.stringify({
+        id: msgId,
+        action,
+        payload,
+      })
+    )
+    this.messageCallbacks.set(msgId, {
+      type: 'MultiReply',
+      subscribeCallback,
+      messageCallback,
+      receivedReply: false,
     })
   }
 }

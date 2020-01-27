@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 /* tslint:disable */
 const request_promise_native_1 = __importDefault(require("request-promise-native"));
-const events_1 = require("events");
 const stream_sea_client_1 = require("./stream-sea-client");
+const stream_sea_subscription_1 = require("./stream-sea-subscription");
 // const logger = require('logacious')()
 // const WebSocket = require('ws')
 /* tslint:enable */
@@ -142,15 +142,9 @@ const stream_sea_client_1 = require("./stream-sea-client");
 // }
 exports.subscribe = async (args) => {
     const client = stream_sea_client_1.getStreamSeaClient(args);
-    // const subscription = new 
-    // , async () => {
-    //   //TODO: return th right event emitter instead of manually piping 2 event emitters
-    //   const ee = await client.subscribe(args.stream)
-    //   ee.on('message', d => eventEmitter.emit('message', d))
-    //   ee.on('error', d => eventEmitter.emit('error', d))
-    //   ee.on('close', d => eventEmitter.emit('close', d))
-    // })
-    return new events_1.EventEmitter();
+    const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
+    client.addSubscription(subscription);
+    return subscription;
 };
 const getHttpURLScheme = (secure) => (secure ? 'https' : 'http');
 const getWsURLScheme = (secure) => (secure ? 'wss' : 'ws');

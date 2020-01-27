@@ -3,6 +3,7 @@ import request from 'request-promise-native'
 import { Stream, Remote, SchemaDefinition } from './types'
 import { EventEmitter } from 'events'
 import { getStreamSeaClient } from './stream-sea-client'
+import { StreamSeaSubscription } from './stream-sea-subscription'
 // const logger = require('logacious')()
 
 // const WebSocket = require('ws')
@@ -152,18 +153,9 @@ import { getStreamSeaClient } from './stream-sea-client'
 
 export const subscribe = async (args: Remote & Stream) => {
   const client = getStreamSeaClient(args)
-  
-  // const subscription = new 
-  
-  // , async () => {
-  //   //TODO: return th right event emitter instead of manually piping 2 event emitters
-  //   const ee = await client.subscribe(args.stream)
-  //   ee.on('message', d => eventEmitter.emit('message', d))
-  //   ee.on('error', d => eventEmitter.emit('error', d))
-  //   ee.on('close', d => eventEmitter.emit('close', d))
-  // })
-
-  return new EventEmitter()
+  const subscription = new StreamSeaSubscription(args.stream)
+  client.addSubscription(subscription)
+  return subscription
 }
 
 const getHttpURLScheme = (secure: boolean) => (secure ? 'https' : 'http')

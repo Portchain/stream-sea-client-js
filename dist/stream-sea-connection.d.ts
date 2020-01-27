@@ -22,9 +22,9 @@ export interface StreamSeaConnectionOptions {
 export declare class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
     private msgCnt;
     private status;
-    private subscriptions;
-    private messagesCallbacks;
-    private ws;
+    private subscriptionsQueue;
+    private messageCallbacks;
+    private sss;
     private options;
     constructor(options: StreamSeaConnectionOptions);
     private onWsOpen;
@@ -33,5 +33,7 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
     private onWsError;
     private generateNextMessageId;
     addSubscription: (subscription: StreamSeaSubscription) => void;
-    private send;
+    private checkSubscriptionsQueue;
+    private sendSingleReply;
+    private sendMultiReply;
 }
