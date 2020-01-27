@@ -9,15 +9,21 @@ interface StreamSeaClientOptions {
     appId: string;
     appSecret: string;
 }
-declare class StreamSeaClient extends EventEmitter {
-    private status;
+/**
+ * Events:
+ *   error
+ *
+ * Public methods:
+ *   addSubscription: (subscription: IStreamSeaSubscription) => void
+ */
+export declare class StreamSeaClient extends EventEmitter {
     private options;
     private connection;
     private subscriptions;
     constructor(options: StreamSeaClientOptions & {
         connectionFactory: IStreamSeaConnectionFactory;
     });
-    private onClose;
+    private onConnectionClose;
     private reopenConnection;
     addSubscription: (subscription: IStreamSeaSubscription) => void;
 }

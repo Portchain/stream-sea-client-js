@@ -29,7 +29,7 @@ var StreamSeaConnectionStatus;
  *   error
  *
  * Public methods:
- *   addSubscription(subscription: IStreamSeaSubscription) => void
+ *   addSubscription: (subscription: IStreamSeaSubscription) => void
  */
 class StreamSeaConnection extends events_1.EventEmitter {
     constructor(options) {
@@ -114,11 +114,11 @@ class StreamSeaConnection extends events_1.EventEmitter {
             this.checkSubscriptionsQueue();
         };
         this.options = options;
-        this.sss = new stream_sea_socket_1.StreamSeaSocket(options.url); // TODO: use factory method
-        this.sss.on('open', this.onSocketOpen);
-        this.sss.on('message', this.onSocketMessage);
-        this.sss.on('close', this.onSocketClose);
-        this.sss.on('error', this.onSocketError);
+        this.socket = new stream_sea_socket_1.StreamSeaSocket(options.url); // TODO: use factory method
+        this.socket.on('open', this.onSocketOpen);
+        this.socket.on('message', this.onSocketMessage);
+        this.socket.on('close', this.onSocketClose);
+        this.socket.on('error', this.onSocketError);
     }
     generateNextMessageId() {
         return ++this.msgCnt;
@@ -144,7 +144,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
      */
     async sendSingleReply(action, payload) {
         const msgId = this.generateNextMessageId();
-        this.sss.send(JSON.stringify({
+        this.socket.send(JSON.stringify({
             id: msgId,
             action,
             payload,
@@ -164,7 +164,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
      */
     sendMultiReply(action, payload, firstReplyCallback, otherRepliesCallback) {
         const msgId = this.generateNextMessageId();
-        this.sss.send(JSON.stringify({
+        this.socket.send(JSON.stringify({
             id: msgId,
             action,
             payload,

@@ -30,14 +30,14 @@ export interface StreamSeaConnectionOptions {
  *   error
  *
  * Public methods:
- *   addSubscription(subscription: IStreamSeaSubscription) => void
+ *   addSubscription: (subscription: IStreamSeaSubscription) => void
  */
 export declare class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
     private msgCnt;
     private status;
     private subscriptionsQueue;
     private callbacksMap;
-    private sss;
+    private socket;
     private options;
     constructor(options: StreamSeaConnectionOptions);
     private onSocketOpen;

@@ -67,7 +67,7 @@ type CallbackRecord = SingleReplyCallbackRecord | MultiReplyCallbackRecord
  *   error
  * 
  * Public methods:
- *   addSubscription(subscription: IStreamSeaSubscription) => void
+ *   addSubscription: (subscription: IStreamSeaSubscription) => void
  */
 export class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
   private msgCnt: number = 0
@@ -75,16 +75,16 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   // Queue of subscribe requests that have not yet been sent to the server
   private subscriptionsQueue: IStreamSeaSubscription[] = []
   private callbacksMap: Map<number, CallbackRecord> = new Map()
-  private sss: IStreamSeaSocket
+  private socket: IStreamSeaSocket
   private options: StreamSeaConnectionOptions
   constructor(options: StreamSeaConnectionOptions){
     super()
     this.options = options
-    this.sss = new StreamSeaSocket(options.url) // TODO: use factory method
-    this.sss.on('open', this.onSocketOpen)
-    this.sss.on('message', this.onSocketMessage)
-    this.sss.on('close', this.onSocketClose)
-    this.sss.on('error', this.onSocketError)
+    this.socket = new StreamSeaSocket(options.url) // TODO: use factory method
+    this.socket.on('open', this.onSocketOpen)
+    this.socket.on('message', this.onSocketMessage)
+    this.socket.on('close', this.onSocketClose)
+    this.socket.on('error', this.onSocketError)
   }
 
   private onSocketOpen = () => {
@@ -191,7 +191,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
    */
   private async sendSingleReply(action: string, payload: any): Promise<any> {
     const msgId = this.generateNextMessageId()
-    this.sss.send(
+    this.socket.send(
       JSON.stringify({
         id: msgId,
         action,
@@ -219,7 +219,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
     otherRepliesCallback: PromiseProxy,
   ) {
     const msgId = this.generateNextMessageId()
-    this.sss.send(
+    this.socket.send(
       JSON.stringify({
         id: msgId,
         action,
