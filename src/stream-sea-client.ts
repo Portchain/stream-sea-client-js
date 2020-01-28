@@ -18,7 +18,6 @@ interface StreamSeaClientOptions {
  * 
  * Events:
  *   error - non-recoverable error. The client should be re-configured
- *   warning - recoverable error.
  * 
  * Public methods:
  *   addSubscription: (subscription: IStreamSeaSubscription) => void
