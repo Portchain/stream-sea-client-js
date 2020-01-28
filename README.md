@@ -4,8 +4,8 @@
 
 Here is an example of a stream sea socket protocol conversation.
 
-The client authenticates and requests 1 subscription for the stream `boiler_data`
-The server sends one message for the stream `boiler_data`
+The client authenticates and subscribes to the stream `boiler_data`
+The server sends one message for the subscription.
 
 ```
 StreamSeaSocket.send {
