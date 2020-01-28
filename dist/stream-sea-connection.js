@@ -3,15 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const stream_sea_socket_1 = require("./stream-sea-socket");
 const logger = require('logacious')();
-class StreamSeaConnectionFactory {
-    constructor(options) {
-        this.createConnection = (options) => {
-            return new StreamSeaConnection(options);
-        };
-        this.options = options;
-    }
-}
-exports.StreamSeaConnectionFactory = StreamSeaConnectionFactory;
 var StreamSeaConnectionStatus;
 (function (StreamSeaConnectionStatus) {
     StreamSeaConnectionStatus["init"] = "init";
@@ -110,11 +101,12 @@ class StreamSeaConnection extends events_1.EventEmitter {
             this.emit('error', e);
         };
         this.addSubscription = (subscription) => {
+            console.log('StreamSeaConnection.addSubscription');
             this.subscriptionsQueue.push(subscription);
             this.checkSubscriptionsQueue();
         };
         this.options = options;
-        this.socket = new stream_sea_socket_1.StreamSeaSocket(options.url); // TODO: use factory method
+        this.socket = this.options.socketFactory.createSocket({ url: options.url }); // TODO: use factory method
         this.socket.on('open', this.onSocketOpen);
         this.socket.on('message', this.onSocketMessage);
         this.socket.on('close', this.onSocketClose);
@@ -128,7 +120,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
      */
     checkSubscriptionsQueue() {
         if (this.status === StreamSeaConnectionStatus.open) {
-            for (const subscription = this.subscriptionsQueue.shift(); subscription;) {
+            this.subscriptionsQueue.forEach(subscription => {
                 this.sendMultiReply('subscribe', subscription.streamName, {
                     resolve: (m) => { return; },
                     reject: (e) => this.onSocketError(e),
@@ -136,7 +128,8 @@ class StreamSeaConnection extends events_1.EventEmitter {
                     resolve: (m) => subscription.emit('message', m),
                     reject: (e) => this.onSocketError(e),
                 });
-            }
+            });
+            this.subscriptionsQueue = [];
         }
     }
     /**
@@ -178,3 +171,13 @@ class StreamSeaConnection extends events_1.EventEmitter {
     }
 }
 exports.StreamSeaConnection = StreamSeaConnection;
+class StreamSeaConnectionFactory {
+    constructor(options) {
+        this.createConnection = (options) => {
+            return new StreamSeaConnection({ ...options, socketFactory: this.socketFactory });
+        };
+        this.options = options;
+        this.socketFactory = new stream_sea_socket_1.StreamSeaSocketFactory({});
+    }
+}
+exports.StreamSeaConnectionFactory = StreamSeaConnectionFactory;

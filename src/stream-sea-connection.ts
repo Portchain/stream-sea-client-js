@@ -1,25 +1,7 @@
 import { EventEmitter } from "events";
 import { IStreamSeaSubscription } from "./stream-sea-subscription";
-import { StreamSeaSocket, IStreamSeaSocket } from "./stream-sea-socket";
+import { IStreamSeaSocket, IStreamSeaSocketFactory, StreamSeaSocketFactory } from "./stream-sea-socket";
 const logger = require('logacious')()
-
-export interface IStreamSeaConnectionFactory {
-  createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection
-}
-
-export interface StreamSeaConnectionFactoryOptions {
-
-}
-
-export class StreamSeaConnectionFactory implements IStreamSeaConnectionFactory {
-  private options: StreamSeaConnectionFactoryOptions
-  constructor(options: StreamSeaConnectionFactoryOptions){
-    this.options = options
-  }
-  public createConnection = (options: StreamSeaConnectionOptions) => {
-    return new StreamSeaConnection(options)
-  }
-}
 
 interface PromiseProxy {
   reject: (err: any) => void
@@ -76,11 +58,11 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   private subscriptionsQueue: IStreamSeaSubscription[] = []
   private callbacksMap: Map<number, CallbackRecord> = new Map()
   private socket: IStreamSeaSocket
-  private options: StreamSeaConnectionOptions
-  constructor(options: StreamSeaConnectionOptions){
+  private options: StreamSeaConnectionOptions & {socketFactory: IStreamSeaSocketFactory}
+  constructor(options: StreamSeaConnectionOptions & {socketFactory: IStreamSeaSocketFactory}){
     super()
     this.options = options
-    this.socket = new StreamSeaSocket(options.url) // TODO: use factory method
+    this.socket = this.options.socketFactory.createSocket({url: options.url}) // TODO: use factory method
     this.socket.on('open', this.onSocketOpen)
     this.socket.on('message', this.onSocketMessage)
     this.socket.on('close', this.onSocketClose)
@@ -160,6 +142,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   }
 
   public addSubscription = (subscription: IStreamSeaSubscription) => {
+    console.log('StreamSeaConnection.addSubscription')
     this.subscriptionsQueue.push(subscription)
     this.checkSubscriptionsQueue()
   }
@@ -169,7 +152,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
    */
   private checkSubscriptionsQueue(){
     if (this.status === StreamSeaConnectionStatus.open) {
-      for(const subscription = this.subscriptionsQueue.shift(); subscription;) {
+      this.subscriptionsQueue.forEach(subscription => {
         this.sendMultiReply(
           'subscribe',
           subscription.streamName,
@@ -182,7 +165,8 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
             reject: (e: any) => this.onSocketError(e),
           },
         )
-      }
+      })
+      this.subscriptionsQueue = []
     }
   }
 
@@ -232,5 +216,27 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
       otherRepliesCallback,
       receivedReply: false,
     })
+  }
+}
+
+// Factory methods
+
+export interface IStreamSeaConnectionFactory {
+  createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection
+}
+
+export interface StreamSeaConnectionFactoryOptions {
+
+}
+
+export class StreamSeaConnectionFactory implements IStreamSeaConnectionFactory {
+  private options: StreamSeaConnectionFactoryOptions
+  private socketFactory: IStreamSeaSocketFactory
+  constructor(options: StreamSeaConnectionFactoryOptions){
+    this.options = options
+    this.socketFactory = new StreamSeaSocketFactory({})
+  }
+  public createConnection = (options: StreamSeaConnectionOptions) => {
+    return new StreamSeaConnection({...options, socketFactory: this.socketFactory})
   }
 }

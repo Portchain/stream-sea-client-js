@@ -1,16 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
 import { IStreamSeaSubscription } from "./stream-sea-subscription";
-export interface IStreamSeaConnectionFactory {
-    createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection;
-}
-export interface StreamSeaConnectionFactoryOptions {
-}
-export declare class StreamSeaConnectionFactory implements IStreamSeaConnectionFactory {
-    private options;
-    constructor(options: StreamSeaConnectionFactoryOptions);
-    createConnection: (options: StreamSeaConnectionOptions) => StreamSeaConnection;
-}
+import { IStreamSeaSocketFactory } from "./stream-sea-socket";
 export interface IStreamSeaConnection extends EventEmitter {
     addSubscription: (subscription: IStreamSeaSubscription) => void;
 }
@@ -39,7 +30,9 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
     private callbacksMap;
     private socket;
     private options;
-    constructor(options: StreamSeaConnectionOptions);
+    constructor(options: StreamSeaConnectionOptions & {
+        socketFactory: IStreamSeaSocketFactory;
+    });
     private onSocketOpen;
     private onSocketMessage;
     private onSocketClose;
@@ -58,4 +51,15 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
      * Send a message expecting multiple replies
      */
     private sendMultiReply;
+}
+export interface IStreamSeaConnectionFactory {
+    createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection;
+}
+export interface StreamSeaConnectionFactoryOptions {
+}
+export declare class StreamSeaConnectionFactory implements IStreamSeaConnectionFactory {
+    private options;
+    private socketFactory;
+    constructor(options: StreamSeaConnectionFactoryOptions);
+    createConnection: (options: StreamSeaConnectionOptions) => StreamSeaConnection;
 }
