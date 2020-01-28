@@ -11,7 +11,7 @@ class UnconnectableConnection extends EventEmitter implements IStreamSeaConnecti
   constructor(){
     super()
     setTimeout(() => {
-      this.emit('error', 'Could not connect')
+      this.emit('warning', 'Could not connect')
       this.emit('close')
     })
   }

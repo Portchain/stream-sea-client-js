@@ -10,6 +10,11 @@ export interface StreamSeaConnectionOptions {
     appId: string;
     appSecret: string;
 }
+export declare enum StreamSeaConnectionStatus {
+    init = "init",
+    open = "open",
+    closed = "closed"
+}
 declare type AuthenticationError = {
     type: 'AuthenticationError';
     error: any;
@@ -39,7 +44,7 @@ export declare type StreamSeaConnectionWarning = ProtocolError | SocketError;
  */
 export declare class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
     private msgCnt;
-    private status;
+    status: StreamSeaConnectionStatus;
     private subscriptionsQueue;
     private callbacksMap;
     private socket;

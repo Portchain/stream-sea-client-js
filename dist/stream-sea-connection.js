@@ -7,7 +7,7 @@ var StreamSeaConnectionStatus;
     StreamSeaConnectionStatus["init"] = "init";
     StreamSeaConnectionStatus["open"] = "open";
     StreamSeaConnectionStatus["closed"] = "closed";
-})(StreamSeaConnectionStatus || (StreamSeaConnectionStatus = {}));
+})(StreamSeaConnectionStatus = exports.StreamSeaConnectionStatus || (exports.StreamSeaConnectionStatus = {}));
 /**
  * A StreamSeaConnection gives a higher-level interface on top of StreamSeaSocket, taking
  * care of authentication and subscription messages

@@ -1,11 +1,43 @@
-import { IStreamSeaConnection, IStreamSeaConnectionFactory } from "../stream-sea-connection"
+import { IStreamSeaConnection, IStreamSeaConnectionFactory, StreamSeaConnection, StreamSeaConnectionStatus } from "../stream-sea-connection"
 import { EventEmitter } from "events"
-import { StreamSeaClient } from "../stream-sea-client"
+import { IStreamSeaSocket, IStreamSeaSocketFactory } from "../stream-sea-socket"
+import * as assert from 'assert'
 import { StreamSeaSubscription } from "../stream-sea-subscription"
 
-// class GoodConnection extends EventEmitter implements IStreamSeaConnection {
-//   addSubscription = () => {return;}
-// }
+class BasicSocket extends EventEmitter implements IStreamSeaSocket {
+  // public sendMock = jest.fn<any, any>(() => {return;})
+  public callbacks: Array<(m: any) => void> = [
+    (m: any) => {
+      expect(m.action).toBe('authenticate')
+      this.emit('message', JSON.stringify({
+        id: m.id,
+        action: "authenticate",
+        success: true,
+        payload: {
+          jailId: "some_jail"
+        }
+      }))
+    },
+  ]
+  constructor(){
+    super()
+    setTimeout(() => this.emit('open'))
+  }
+  public send = (m: any) => {
+    const fn = this.callbacks.shift()
+    assert.ok(fn)
+    setTimeout(() => fn!(JSON.parse(m)))
+  }
+}
+
+class BasicSocketFactory implements IStreamSeaSocketFactory {
+  public sockets: BasicSocket[] = []
+  createSocket = () => {
+    const socket = new BasicSocket()
+    this.sockets.push(socket)
+    return socket
+  }
+}
 
 // class UnconnectableConnection extends EventEmitter implements IStreamSeaConnection {
 //   constructor(){
@@ -51,8 +83,21 @@ import { StreamSeaSubscription } from "../stream-sea-subscription"
 // }
 
 describe('StreamSeaConnection', () => {
-  it('basic flow', () => {
-    
+  it('basic flow', done => {
+    const socketFactory = new BasicSocketFactory()
+    const connection = new StreamSeaConnection({
+      url: 'test_url',
+      appId: 'test_app_id',
+      appSecret: 'test_app_secret',
+      socketFactory,
+    })
+    // const subscription = new StreamSeaSubscription('testStream')
+    setTimeout(() => {
+      expect(socketFactory.sockets.length).toBe(1)
+      expect(socketFactory.sockets[0].callbacks.length).toBe(0)
+      expect(connection.status).toBe(StreamSeaConnectionStatus.open)
+      done()
+    }, 1000)
   })
 })
 // describe('StreamSeaClient', () => {

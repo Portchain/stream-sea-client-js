@@ -14,7 +14,7 @@ class UnconnectableConnection extends events_1.EventEmitter {
         super();
         this.addSubscription = () => { return; };
         setTimeout(() => {
-            this.emit('error', 'Could not connect');
+            this.emit('warning', 'Could not connect');
             this.emit('close');
         });
     }

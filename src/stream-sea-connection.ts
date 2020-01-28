@@ -17,7 +17,7 @@ export interface StreamSeaConnectionOptions {
   appSecret: string
 }
 
-enum StreamSeaConnectionStatus {
+export enum StreamSeaConnectionStatus {
   init = 'init',
   open = 'open',
   closed = 'closed',
@@ -67,7 +67,7 @@ export type StreamSeaConnectionWarning = ProtocolError | SocketError
  */
 export class StreamSeaConnection extends EventEmitter implements IStreamSeaConnection {
   private msgCnt: number = 0
-  private status: StreamSeaConnectionStatus = StreamSeaConnectionStatus.init
+  public status: StreamSeaConnectionStatus = StreamSeaConnectionStatus.init
   // Queue of subscribe requests that have not yet been sent to the server
   private subscriptionsQueue: IStreamSeaSubscription[] = []
   private callbacksMap: Map<number, CallbackRecord> = new Map()
