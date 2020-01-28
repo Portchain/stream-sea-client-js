@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const stream_sea_connection_1 = require("./stream-sea-connection");
 const logger = require('logacious')();
-const RECONNECT_INTERVAL_MS = 3000;
 const getWsURLScheme = (secure) => (secure ? 'wss' : 'ws');
 /**
+ * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
+ *
  * Events:
  *   error
  *
@@ -16,9 +17,10 @@ class StreamSeaClient extends events_1.EventEmitter {
     constructor(options) {
         super();
         this.subscriptions = [];
+        this.RECONNECT_INTERVAL_MS = 3000;
         this.onConnectionClose = () => {
             logger.warn('StreamSeaClient: Connection closed');
-            setTimeout(this.reopenConnection, RECONNECT_INTERVAL_MS);
+            setTimeout(this.reopenConnection, this.RECONNECT_INTERVAL_MS);
         };
         this.reopenConnection = () => {
             logger.warn('StreamSeaClient: Reopening connection');
@@ -28,7 +30,7 @@ class StreamSeaClient extends events_1.EventEmitter {
                 appSecret: this.options.appSecret,
             });
             this.connection.on('close', this.onConnectionClose);
-            this.connection.on('error', e => console.error(e));
+            this.connection.on('error', e => logger.error(e));
             // TODO: avoid code repetition
             this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription));
         };
@@ -43,7 +45,7 @@ class StreamSeaClient extends events_1.EventEmitter {
             appSecret: options.appSecret,
         });
         this.connection.on('close', this.onConnectionClose);
-        this.connection.on('error', e => console.error(e));
+        this.connection.on('error', e => logger.error(e));
     }
 }
 exports.StreamSeaClient = StreamSeaClient;

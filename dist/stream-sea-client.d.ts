@@ -10,6 +10,8 @@ interface StreamSeaClientOptions {
     appSecret: string;
 }
 /**
+ * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
+ *
  * Events:
  *   error
  *
@@ -20,6 +22,7 @@ export declare class StreamSeaClient extends EventEmitter {
     private options;
     private connection;
     private subscriptions;
+    private RECONNECT_INTERVAL_MS;
     constructor(options: StreamSeaClientOptions & {
         connectionFactory: IStreamSeaConnectionFactory;
     });
