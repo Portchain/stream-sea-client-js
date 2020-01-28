@@ -45,12 +45,12 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
   }
 
   private onWsMessage = (m: any) => {
-    console.log('StreamSeaSocket.onWsMessage:', JSON.stringify(m, null, 4))
+    // console.log('StreamSeaSocket.onWsMessage:', JSON.stringify(m, null, 4))
     this.emit('message', m)
   }
   
   private onWsClose = () => {
-    console.log('StreamSeaSocket.onWsClose')
+    // console.log('StreamSeaSocket.onWsClose')
     this.emit('close')
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval)
@@ -63,7 +63,7 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
   }
 
   public send = (message: string) => {
-    console.log('StreamSeaSocket.send', JSON.stringify(message, null, 4))
+    // console.log('StreamSeaSocket.send', JSON.stringify(message, null, 4))
     this.ws.send(message)
   }
 }

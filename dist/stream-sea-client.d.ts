@@ -13,7 +13,8 @@ interface StreamSeaClientOptions {
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
  *
  * Events:
- *   error
+ *   error - non-recoverable error. The client should be re-configured
+ *   warning - recoverable error.
  *
  * Public methods:
  *   addSubscription: (subscription: IStreamSeaSubscription) => void
@@ -26,6 +27,8 @@ export declare class StreamSeaClient extends EventEmitter {
     constructor(options: StreamSeaClientOptions & {
         connectionFactory: IStreamSeaConnectionFactory;
     });
+    private onConnectionError;
+    private onConnectionWarning;
     private onConnectionClose;
     private reopenConnection;
     addSubscription: (subscription: IStreamSeaSubscription) => void;

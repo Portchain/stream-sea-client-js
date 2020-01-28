@@ -10,15 +10,29 @@ export interface StreamSeaConnectionOptions {
     appId: string;
     appSecret: string;
 }
+declare type AuthenticationError = {
+    type: 'AuthenticationError';
+    error: any;
+};
+declare type ProtocolError = {
+    type: 'ProtocolError';
+    error: any;
+};
+declare type SocketError = {
+    type: 'SocketError';
+    error: any;
+};
+export declare type StreamSeaConnectionError = AuthenticationError;
+export declare type StreamSeaConnectionWarning = ProtocolError | SocketError;
 /**
  * A StreamSeaConnection gives a higher-level interface on top of StreamSeaSocket, taking
  * care of authentication and subscription messages
  *
  * Events:
- *   open
  *   message
- *   close
- *   error
+ *   close - the underlying websocket has closed
+ *   error - a non-recoverable error has occurred. The connection needs to be terminated
+ *   warning - a recoverable error has occurred
  *
  * Public methods:
  *   addSubscription: (subscription: IStreamSeaSubscription) => void
@@ -63,3 +77,4 @@ export declare class StreamSeaConnectionFactory implements IStreamSeaConnectionF
     constructor(options: StreamSeaConnectionFactoryOptions);
     createConnection: (options: StreamSeaConnectionOptions) => StreamSeaConnection;
 }
+export {};

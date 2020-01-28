@@ -8,7 +8,8 @@ const getWsURLScheme = (secure) => (secure ? 'wss' : 'ws');
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
  *
  * Events:
- *   error
+ *   error - non-recoverable error. The client should be re-configured
+ *   warning - recoverable error.
  *
  * Public methods:
  *   addSubscription: (subscription: IStreamSeaSubscription) => void
@@ -18,6 +19,12 @@ class StreamSeaClient extends events_1.EventEmitter {
         super();
         this.subscriptions = [];
         this.RECONNECT_INTERVAL_MS = 3000;
+        this.onConnectionError = (e) => {
+            this.emit('error', e);
+        };
+        this.onConnectionWarning = (w) => {
+            logger.warn(w);
+        };
         this.onConnectionClose = () => {
             logger.warn('StreamSeaClient: Connection closed');
             setTimeout(this.reopenConnection, this.RECONNECT_INTERVAL_MS);
@@ -30,8 +37,8 @@ class StreamSeaClient extends events_1.EventEmitter {
                 appSecret: this.options.appSecret,
             });
             this.connection.on('close', this.onConnectionClose);
-            this.connection.on('error', e => logger.error(e));
-            // TODO: avoid code repetition
+            this.connection.on('error', this.onConnectionError);
+            this.connection.on('warning', this.onConnectionWarning);
             this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription));
         };
         this.addSubscription = (subscription) => {
@@ -45,7 +52,8 @@ class StreamSeaClient extends events_1.EventEmitter {
             appSecret: options.appSecret,
         });
         this.connection.on('close', this.onConnectionClose);
-        this.connection.on('error', e => logger.error(e));
+        this.connection.on('error', this.onConnectionError);
+        this.connection.on('warning', this.onConnectionWarning);
     }
 }
 exports.StreamSeaClient = StreamSeaClient;

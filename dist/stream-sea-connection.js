@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const stream_sea_socket_1 = require("./stream-sea-socket");
-const logger = require('logacious')();
 var StreamSeaConnectionStatus;
 (function (StreamSeaConnectionStatus) {
     StreamSeaConnectionStatus["init"] = "init";
@@ -14,10 +13,10 @@ var StreamSeaConnectionStatus;
  * care of authentication and subscription messages
  *
  * Events:
- *   open
  *   message
- *   close
- *   error
+ *   close - the underlying websocket has closed
+ *   error - a non-recoverable error has occurred. The connection needs to be terminated
+ *   warning - a recoverable error has occurred
  *
  * Public methods:
  *   addSubscription: (subscription: IStreamSeaSubscription) => void
@@ -39,69 +38,85 @@ class StreamSeaConnection extends events_1.EventEmitter {
                 this.status = StreamSeaConnectionStatus.open;
                 this.checkSubscriptionsQueue();
             })
-                .catch(err => {
+                .catch(error => {
+                const err = {
+                    type: 'AuthenticationError',
+                    error,
+                };
                 this.emit('error', err);
             });
         };
         this.onSocketMessage = (msgStr) => {
+            let msg;
             try {
-                const msg = JSON.parse(msgStr);
-                if (!msg.id) {
-                    const errMessage = `Server sends a message without an id ${JSON.stringify(msg)}`;
-                    logger.error(errMessage);
-                    this.emit('error', errMessage);
-                    return;
+                msg = JSON.parse(msgStr);
+            }
+            catch (error) {
+                const warning = {
+                    type: 'ProtocolError',
+                    error,
+                };
+                this.emit('warning', warning);
+                return;
+            }
+            if (!msg.id) {
+                const warning = {
+                    type: 'ProtocolError',
+                    error: `Server sends a message without an id ${JSON.stringify(msg)}`
+                };
+                this.emit('warning', warning);
+                return;
+            }
+            if (!this.callbacksMap.has(msg.id)) {
+                const warning = {
+                    type: 'ProtocolError',
+                    error: `Server sent a response but the message id could not be resolved to a request. Message: ${JSON.stringify(msg)}`,
+                };
+                this.emit('warning', warning);
+                return;
+            }
+            const callbackRecord = this.callbacksMap.get(msg.id);
+            if (callbackRecord.type === 'SingleReply') {
+                const promiseProxy = callbackRecord.callback;
+                if (msg.success) {
+                    promiseProxy.resolve(msg.payload);
                 }
-                if (!this.callbacksMap.has(msg.id)) {
-                    const errMessage = `Server sent a response but the message id could not be resolved to a request. Message: ${JSON.stringify(msg)}`;
-                    logger.error(errMessage);
-                    this.emit('error', errMessage);
-                    return;
+                else {
+                    promiseProxy.reject(msg.error);
                 }
-                const callbackRecord = this.callbacksMap.get(msg.id);
-                if (callbackRecord.type === 'SingleReply') {
-                    const promiseProxy = callbackRecord.callback;
+                this.callbacksMap.delete(msg.id);
+                return;
+            }
+            else {
+                // callbackRecord.type === 'MultiReply'
+                if (!callbackRecord.receivedReply) {
+                    callbackRecord.receivedReply = true;
+                    const promiseProxy = callbackRecord.firstReplyCallback;
                     if (msg.success) {
                         promiseProxy.resolve(msg.payload);
                     }
                     else {
                         promiseProxy.reject(msg.error);
                     }
-                    this.callbacksMap.delete(msg.id);
-                }
-                else if (callbackRecord.type === 'MultiReply') {
-                    if (!callbackRecord.receivedReply) {
-                        callbackRecord.receivedReply = true;
-                        const promiseProxy = callbackRecord.firstReplyCallback;
-                        if (msg.success) {
-                            promiseProxy.resolve(msg.payload);
-                        }
-                        else {
-                            promiseProxy.reject(msg.error);
-                        }
-                    }
-                    else {
-                        const promiseProxy = callbackRecord.otherRepliesCallback;
-                        promiseProxy.resolve(msg.payload);
-                    }
                 }
                 else {
-                    throw new Error('Not implemented');
+                    const promiseProxy = callbackRecord.otherRepliesCallback;
+                    promiseProxy.resolve(msg.payload);
                 }
-            }
-            catch (err) {
-                logger.error(err);
-                this.emit('error', err);
             }
         };
         this.onSocketClose = () => {
             this.emit('close');
         };
-        this.onSocketError = (e) => {
-            this.emit('error', e);
+        this.onSocketError = (error) => {
+            const warning = {
+                type: 'SocketError',
+                error,
+            };
+            this.emit('warning', warning);
         };
         this.addSubscription = (subscription) => {
-            console.log('StreamSeaConnection.addSubscription');
+            // console.log('StreamSeaConnection.addSubscription')
             this.subscriptionsQueue.push(subscription);
             this.checkSubscriptionsQueue();
         };
