@@ -78,9 +78,13 @@ describe('StreamSeaConnection', () => {
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);
         setTimeout(() => {
+            // Verify a socket was created
             expect(socketFactory.sockets.length).toBe(1);
+            // Verify that all callbacks have been called
             expect(socketFactory.sockets[0].sendCallbacks.length).toBe(0);
+            // Verify that the connection is open
             expect(connection.status).toBe(stream_sea_connection_1.StreamSeaConnectionStatus.open);
+            // Verify that messages on the socket are forwarded to the subscription
             subscription.on('message', m => {
                 expect(m.foo).toBe('bar');
                 done();
