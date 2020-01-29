@@ -1,4 +1,4 @@
-import { StreamSeaConnection, StreamSeaConnectionStatus } from "../stream-sea-connection"
+import { StreamSeaConnection, StreamSeaConnectionStatus, StreamSeaConnectionError } from "../stream-sea-connection"
 import { EventEmitter } from "events"
 import { IStreamSeaSocket, IStreamSeaSocketFactory } from "../stream-sea-socket"
 import * as assert from 'assert'
@@ -108,7 +108,8 @@ describe('StreamSeaConnection', () => {
     })
     const subscription = new StreamSeaSubscription('testStream')
     connection.addSubscription(subscription)
-    const errorHandler = jest.fn()
+    // Verify the correct error is thrown
+    const errorHandler = jest.fn((e: StreamSeaConnectionError) => expect(e.type).toBe('AuthenticationError'))
     connection.on('error', errorHandler)
     setTimeout(() => {
       // Verify a socket was created
@@ -117,6 +118,7 @@ describe('StreamSeaConnection', () => {
       expect(socketFactory.sockets[0].sendCallbacks.length).toBe(1)
       // Verify that the connection is not open
       expect(connection.status).toBe(StreamSeaConnectionStatus.init)
+      // Verify that the error handler was called
       expect(errorHandler.mock.calls.length).toBe(1)
       done()
     }, 1000)
