@@ -17,14 +17,26 @@ class BasicSocket extends events_1.EventEmitter {
         this.sendCallbacks = [
             m => {
                 expect(m.action).toBe('authenticate');
-                this.emit('message', JSON.stringify({
-                    id: m.id,
-                    action: "authenticate",
-                    success: true,
-                    payload: {
-                        jailId: "some_jail"
-                    }
-                }));
+                if (m.password === 'test_app_secret') {
+                    this.emit('message', JSON.stringify({
+                        id: m.id,
+                        action: "authenticate",
+                        success: true,
+                        payload: {
+                            jailId: "some_jail"
+                        }
+                    }));
+                }
+                else {
+                    this.emit('message', JSON.stringify({
+                        id: m.id,
+                        action: "authenticate",
+                        success: false,
+                        error: {
+                            "message": "Invalid credentials"
+                        }
+                    }));
+                }
             },
             m => {
                 expect(m.action).toBe('subscribe');
@@ -80,7 +92,7 @@ describe('StreamSeaConnection', () => {
         setTimeout(() => {
             // Verify a socket was created
             expect(socketFactory.sockets.length).toBe(1);
-            // Verify that all callbacks have been called
+            // Verify that all send callbacks have been called
             expect(socketFactory.sockets[0].sendCallbacks.length).toBe(0);
             // Verify that the connection is open
             expect(connection.status).toBe(stream_sea_connection_1.StreamSeaConnectionStatus.open);
@@ -90,6 +102,29 @@ describe('StreamSeaConnection', () => {
                 done();
             });
             socketFactory.sockets[0].emitSubscriptionMessage();
+        }, 1000);
+    });
+    it('bad credentials', done => {
+        const socketFactory = new BasicSocketFactory();
+        const connection = new stream_sea_connection_1.StreamSeaConnection({
+            url: 'test_url',
+            appId: 'test_app_id',
+            appSecret: 'test_app_secret',
+            socketFactory,
+        });
+        const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
+        connection.addSubscription(subscription);
+        const errorHandler = jest.fn();
+        connection.on('error', errorHandler);
+        setTimeout(() => {
+            // Verify a socket was created
+            expect(socketFactory.sockets.length).toBe(1);
+            // Verify that only the first send callback has been called
+            expect(socketFactory.sockets[0].sendCallbacks.length).toBe(1);
+            // Verify that the connection is not open
+            expect(connection.status).toBe(stream_sea_connection_1.StreamSeaConnectionStatus.init);
+            expect(errorHandler.mock.calls.length).toBe(1);
+            done();
         }, 1000);
     });
 });

@@ -28,11 +28,11 @@ class StreamSeaSocket extends events_1.EventEmitter {
             this.emit('open');
         };
         this.onWsMessage = (m) => {
-            // console.log('StreamSeaSocket.onWsMessage:', JSON.stringify(m, null, 4))
+            console.log('StreamSeaSocket.onWsMessage:', JSON.stringify(m, null, 4));
             this.emit('message', m);
         };
         this.onWsClose = () => {
-            // console.log('StreamSeaSocket.onWsClose')
+            console.log('StreamSeaSocket.onWsClose');
             this.emit('close');
             if (this.heartbeatInterval) {
                 clearInterval(this.heartbeatInterval);
@@ -43,7 +43,7 @@ class StreamSeaSocket extends events_1.EventEmitter {
             this.emit('error', e);
         };
         this.send = (message) => {
-            // console.log('StreamSeaSocket.send', JSON.stringify(message, null, 4))
+            console.log('StreamSeaSocket.send', JSON.stringify(message, null, 4));
             this.ws.send(message);
         };
         this.options = options;
