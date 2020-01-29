@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { EventEmitter } from "events";
-import { IStreamSeaConnectionFactory } from "./stream-sea-connection";
-import { IStreamSeaSubscription } from "./stream-sea-subscription";
+import { EventEmitter } from 'events';
+import { IStreamSeaConnectionFactory } from './stream-sea-connection';
+import { IStreamSeaSubscription } from './stream-sea-subscription';
 interface StreamSeaClientOptions {
     remoteServerHost: string;
     remoteServerPort: string;

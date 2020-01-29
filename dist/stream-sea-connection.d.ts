@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { EventEmitter } from "events";
-import { IStreamSeaSubscription } from "./stream-sea-subscription";
-import { IStreamSeaSocketFactory } from "./stream-sea-socket";
+import { EventEmitter } from 'events';
+import { IStreamSeaSubscription } from './stream-sea-subscription';
+import { IStreamSeaSocketFactory } from './stream-sea-socket';
 export interface IStreamSeaConnection extends EventEmitter {
     addSubscription: (subscription: IStreamSeaSubscription) => void;
 }

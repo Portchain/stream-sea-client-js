@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface IStreamSeaSocket extends EventEmitter {
     send: (m: any) => void;
 }

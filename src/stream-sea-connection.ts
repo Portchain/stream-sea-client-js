@@ -1,6 +1,6 @@
-import { EventEmitter } from "events";
-import { IStreamSeaSubscription } from "./stream-sea-subscription";
-import { IStreamSeaSocket, IStreamSeaSocketFactory, StreamSeaSocketFactory } from "./stream-sea-socket";
+import { EventEmitter } from 'events'
+import { IStreamSeaSubscription } from './stream-sea-subscription'
+import { IStreamSeaSocket, IStreamSeaSocketFactory, StreamSeaSocketFactory } from './stream-sea-socket'
 
 interface PromiseProxy {
   reject: (err: any) => void
@@ -24,29 +24,32 @@ export enum StreamSeaConnectionStatus {
 }
 
 interface SingleReplyCallbackRecord {
-  type: 'SingleReply',
+  type: 'SingleReply'
   callback: PromiseProxy
 }
 
 interface MultiReplyCallbackRecord {
-  type: 'MultiReply',
-  receivedReply: boolean,
-  firstReplyCallback: PromiseProxy,
-  otherRepliesCallback: PromiseProxy,
+  type: 'MultiReply'
+  receivedReply: boolean
+  firstReplyCallback: PromiseProxy
+  otherRepliesCallback: PromiseProxy
 }
 
 type CallbackRecord = SingleReplyCallbackRecord | MultiReplyCallbackRecord
 
-type AuthenticationError = { // Authentication failed
-  type: 'AuthenticationError',
+type AuthenticationError = {
+  // Authentication failed
+  type: 'AuthenticationError'
   error: any
 }
-type ProtocolError = { // The server's response violated protocol
-  type: 'ProtocolError',
+type ProtocolError = {
+  // The server's response violated protocol
+  type: 'ProtocolError'
   error: any
 }
-type SocketError = { // Unknown error from underlying socket
-  type: 'SocketError',
+type SocketError = {
+  // Unknown error from underlying socket
+  type: 'SocketError'
   error: any
 }
 export type StreamSeaConnectionError = AuthenticationError
@@ -55,13 +58,13 @@ export type StreamSeaConnectionWarning = ProtocolError | SocketError
 /**
  * A StreamSeaConnection gives a higher-level interface on top of StreamSeaSocket, taking
  * care of authentication and subscription messages
- * 
+ *
  * Events:
  *   message
  *   close - the underlying websocket has closed
  *   error - a non-recoverable error has occurred. The connection needs to be terminated
  *   warning - a recoverable error has occurred
- * 
+ *
  * Public methods:
  *   addSubscription: (subscription: IStreamSeaSubscription) => void
  */
@@ -72,11 +75,11 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   private subscriptionsQueue: IStreamSeaSubscription[] = []
   private callbacksMap: Map<number, CallbackRecord> = new Map()
   private socket: IStreamSeaSocket
-  private options: StreamSeaConnectionOptions & {socketFactory: IStreamSeaSocketFactory}
-  constructor(options: StreamSeaConnectionOptions & {socketFactory: IStreamSeaSocketFactory}){
+  private options: StreamSeaConnectionOptions & { socketFactory: IStreamSeaSocketFactory }
+  constructor(options: StreamSeaConnectionOptions & { socketFactory: IStreamSeaSocketFactory }) {
     super()
     this.options = options
-    this.socket = this.options.socketFactory.createSocket({url: options.url}) // TODO: use factory method
+    this.socket = this.options.socketFactory.createSocket({ url: options.url }) // TODO: use factory method
     this.socket.on('open', this.onSocketOpen)
     this.socket.on('message', this.onSocketMessage)
     this.socket.on('close', this.onSocketClose)
@@ -88,17 +91,17 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
       username: this.options.appId,
       password: this.options.appSecret,
     })
-    .then(() => {
-      this.status = StreamSeaConnectionStatus.open
-      this.checkSubscriptionsQueue()
-    })
-    .catch(error => {
-      const err: StreamSeaConnectionError = {
-        type: 'AuthenticationError',
-        error,
-      }
-      this.emit('error', err)
-    })
+      .then(() => {
+        this.status = StreamSeaConnectionStatus.open
+        this.checkSubscriptionsQueue()
+      })
+      .catch(error => {
+        const err: StreamSeaConnectionError = {
+          type: 'AuthenticationError',
+          error,
+        }
+        this.emit('error', err)
+      })
   }
 
   private onSocketMessage = (msgStr: string) => {
@@ -117,7 +120,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
     if (!msg.id) {
       const warning: StreamSeaConnectionWarning = {
         type: 'ProtocolError',
-        error: `Server sends a message without an id ${JSON.stringify(msg)}`
+        error: `Server sends a message without an id ${JSON.stringify(msg)}`,
       }
       this.emit('warning', warning)
       return
@@ -133,7 +136,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
     }
 
     const callbackRecord: CallbackRecord = this.callbacksMap.get(msg.id)!
-    if (callbackRecord.type === 'SingleReply'){
+    if (callbackRecord.type === 'SingleReply') {
       const promiseProxy = callbackRecord.callback
       if (msg.success) {
         promiseProxy.resolve(msg.payload)
@@ -155,7 +158,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
       } else {
         const promiseProxy = callbackRecord.otherRepliesCallback
         promiseProxy.resolve(msg.payload)
-      } 
+      }
     }
   }
 
@@ -184,20 +187,22 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   /**
    * Send out queued subscriptions if possible
    */
-  private checkSubscriptionsQueue(){
+  private checkSubscriptionsQueue() {
     if (this.status === StreamSeaConnectionStatus.open) {
       this.subscriptionsQueue.forEach(subscription => {
         this.sendMultiReply(
           'subscribe',
           subscription.streamName,
           {
-            resolve: (m: any) => {return;}, // Nothing to do for subscribe callback
+            resolve: (m: any) => {
+              return
+            }, // Nothing to do for subscribe callback
             reject: (e: any) => this.onSocketError(e),
           },
           {
             resolve: (m: any) => subscription.emit('message', m),
             reject: (e: any) => this.onSocketError(e),
-          },
+          }
         )
       })
       this.subscriptionsQueue = []
@@ -230,12 +235,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   /**
    * Send a message expecting multiple replies
    */
-  private sendMultiReply(
-    action: string,
-    payload: any,
-    firstReplyCallback: PromiseProxy,
-    otherRepliesCallback: PromiseProxy,
-  ) {
+  private sendMultiReply(action: string, payload: any, firstReplyCallback: PromiseProxy, otherRepliesCallback: PromiseProxy) {
     const msgId = this.generateNextMessageId()
     this.socket.send(
       JSON.stringify({
@@ -259,18 +259,16 @@ export interface IStreamSeaConnectionFactory {
   createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection
 }
 
-export interface StreamSeaConnectionFactoryOptions {
-
-}
+export interface StreamSeaConnectionFactoryOptions {}
 
 export class StreamSeaConnectionFactory implements IStreamSeaConnectionFactory {
   private options: StreamSeaConnectionFactoryOptions
   private socketFactory: IStreamSeaSocketFactory
-  constructor(options: StreamSeaConnectionFactoryOptions){
+  constructor(options: StreamSeaConnectionFactoryOptions) {
     this.options = options
     this.socketFactory = new StreamSeaSocketFactory({})
   }
   public createConnection = (options: StreamSeaConnectionOptions) => {
-    return new StreamSeaConnection({...options, socketFactory: this.socketFactory})
+    return new StreamSeaConnection({ ...options, socketFactory: this.socketFactory })
   }
 }

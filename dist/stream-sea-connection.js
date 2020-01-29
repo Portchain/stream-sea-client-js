@@ -62,7 +62,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
             if (!msg.id) {
                 const warning = {
                     type: 'ProtocolError',
-                    error: `Server sends a message without an id ${JSON.stringify(msg)}`
+                    error: `Server sends a message without an id ${JSON.stringify(msg)}`,
                 };
                 this.emit('warning', warning);
                 return;
@@ -137,7 +137,9 @@ class StreamSeaConnection extends events_1.EventEmitter {
         if (this.status === StreamSeaConnectionStatus.open) {
             this.subscriptionsQueue.forEach(subscription => {
                 this.sendMultiReply('subscribe', subscription.streamName, {
-                    resolve: (m) => { return; },
+                    resolve: (m) => {
+                        return;
+                    },
                     reject: (e) => this.onSocketError(e),
                 }, {
                     resolve: (m) => subscription.emit('message', m),

@@ -20,21 +20,21 @@ class BasicSocket extends events_1.EventEmitter {
                 if (m.password === 'test_app_secret') {
                     this.emit('message', JSON.stringify({
                         id: m.id,
-                        action: "authenticate",
+                        action: 'authenticate',
                         success: true,
                         payload: {
-                            jailId: "some_jail"
-                        }
+                            jailId: 'some_jail',
+                        },
                     }));
                 }
                 else {
                     this.emit('message', JSON.stringify({
                         id: m.id,
-                        action: "authenticate",
+                        action: 'authenticate',
                         success: false,
                         error: {
-                            "message": "Invalid credentials"
-                        }
+                            message: 'Invalid credentials',
+                        },
                     }));
                 }
             },
@@ -43,7 +43,7 @@ class BasicSocket extends events_1.EventEmitter {
                 this.subscriptionKey = m.id;
                 this.emit('message', JSON.stringify({
                     id: m.id,
-                    action: "subscription",
+                    action: 'subscription',
                     success: true,
                     payload: m.id,
                 }));
@@ -63,7 +63,7 @@ class BasicSocket extends events_1.EventEmitter {
             action: 'subscription',
             streamName: 'testStream',
             payload: {
-                foo: "bar"
+                foo: 'bar',
             },
         }));
     }

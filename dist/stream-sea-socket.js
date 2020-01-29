@@ -23,7 +23,9 @@ class StreamSeaSocket extends events_1.EventEmitter {
         super();
         this.onWsOpen = () => {
             this.heartbeatInterval = setInterval(() => {
-                this.ws.ping(() => { return; });
+                this.ws.ping(() => {
+                    return;
+                });
             }, PING_INTERVAL_MS);
             this.emit('open');
         };

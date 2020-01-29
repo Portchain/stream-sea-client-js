@@ -1,8 +1,8 @@
-import { StreamSeaConnection, StreamSeaConnectionStatus, StreamSeaConnectionError } from "../stream-sea-connection"
-import { EventEmitter } from "events"
-import { IStreamSeaSocket, IStreamSeaSocketFactory } from "../stream-sea-socket"
+import { StreamSeaConnection, StreamSeaConnectionStatus, StreamSeaConnectionError } from '../stream-sea-connection'
+import { EventEmitter } from 'events'
+import { IStreamSeaSocket, IStreamSeaSocketFactory } from '../stream-sea-socket'
 import * as assert from 'assert'
-import { StreamSeaSubscription } from "../stream-sea-subscription"
+import { StreamSeaSubscription } from '../stream-sea-subscription'
 
 class BasicSocket extends EventEmitter implements IStreamSeaSocket {
   // public sendMock = jest.fn<any, any>(() => {return;})
@@ -10,38 +10,47 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
   public sendCallbacks: Array<(m: any) => void> = [
     m => {
       expect(m.action).toBe('authenticate')
-      if (m.password === 'test_app_secret'){
-        this.emit('message', JSON.stringify({
-          id: m.id,
-          action: "authenticate",
-          success: true,
-          payload: {
-            jailId: "some_jail"
-          }
-        }))
+      if (m.password === 'test_app_secret') {
+        this.emit(
+          'message',
+          JSON.stringify({
+            id: m.id,
+            action: 'authenticate',
+            success: true,
+            payload: {
+              jailId: 'some_jail',
+            },
+          })
+        )
       } else {
-        this.emit('message', JSON.stringify({
-          id: m.id,
-          action: "authenticate",
-          success: false,
-          error: {
-            "message": "Invalid credentials"
-          }
-        }))
+        this.emit(
+          'message',
+          JSON.stringify({
+            id: m.id,
+            action: 'authenticate',
+            success: false,
+            error: {
+              message: 'Invalid credentials',
+            },
+          })
+        )
       }
     },
     m => {
       expect(m.action).toBe('subscribe')
       this.subscriptionKey = m.id
-      this.emit('message', JSON.stringify({
-        id: m.id,
-        action: "subscription",
-        success: true,
-        payload: m.id,
-      }))
+      this.emit(
+        'message',
+        JSON.stringify({
+          id: m.id,
+          action: 'subscription',
+          success: true,
+          payload: m.id,
+        })
+      )
     },
   ]
-  constructor(){
+  constructor() {
     super()
     setTimeout(() => this.emit('open'))
   }
@@ -50,16 +59,19 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
     assert.ok(fn)
     setTimeout(() => fn!(JSON.parse(m)))
   }
-  public emitSubscriptionMessage(){
+  public emitSubscriptionMessage() {
     assert.ok(this.subscriptionKey)
-    this.emit('message', JSON.stringify({
-      id: this.subscriptionKey,
-      action: 'subscription',
-      streamName: 'testStream',
-      payload: {
-        foo: "bar"
-      },
-    }))
+    this.emit(
+      'message',
+      JSON.stringify({
+        id: this.subscriptionKey,
+        action: 'subscription',
+        streamName: 'testStream',
+        payload: {
+          foo: 'bar',
+        },
+      })
+    )
   }
 }
 

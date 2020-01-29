@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events'
 
 export interface IStreamSeaSubscription extends EventEmitter {
   streamName: string
@@ -7,13 +7,13 @@ export interface IStreamSeaSubscription extends EventEmitter {
 /**
  * A StreamSeaSubscription represents a long-lasting logical subscription.
  * A StreamSeaSubscription may be transferred from one connection to another
- * 
+ *
  * Events:
  *   message
  */
 export class StreamSeaSubscription extends EventEmitter implements IStreamSeaSubscription {
   public streamName: string
-  constructor(streamName: string){
+  constructor(streamName: string) {
     super()
     this.streamName = streamName
   }

@@ -1,7 +1,7 @@
-import { EventEmitter } from "events";
-import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionFactory, StreamSeaConnectionError, StreamSeaConnectionWarning } from "./stream-sea-connection";
-import { IStreamSeaSubscription } from "./stream-sea-subscription";
-import { getWsURLScheme } from "./utils";
+import { EventEmitter } from 'events'
+import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionFactory, StreamSeaConnectionError, StreamSeaConnectionWarning } from './stream-sea-connection'
+import { IStreamSeaSubscription } from './stream-sea-subscription'
+import { getWsURLScheme } from './utils'
 const logger = require('logacious')()
 
 interface StreamSeaClientOptions {
@@ -14,20 +14,20 @@ interface StreamSeaClientOptions {
 
 /**
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
- * 
+ *
  * Events:
  *   error - non-recoverable error. The client should be re-configured
- * 
+ *
  * Public methods:
  *   addSubscription: (subscription: IStreamSeaSubscription) => void
  */
 export class StreamSeaClient extends EventEmitter {
-  private options: StreamSeaClientOptions & {connectionFactory: IStreamSeaConnectionFactory}
+  private options: StreamSeaClientOptions & { connectionFactory: IStreamSeaConnectionFactory }
   private connection: IStreamSeaConnection
   private subscriptions: IStreamSeaSubscription[] = []
-  private RECONNECT_INTERVAL_MS = 3000;
+  private RECONNECT_INTERVAL_MS = 3000
 
-  constructor(options: StreamSeaClientOptions & {connectionFactory: IStreamSeaConnectionFactory}){
+  constructor(options: StreamSeaClientOptions & { connectionFactory: IStreamSeaConnectionFactory }) {
     super()
     this.options = options
     this.connection = options.connectionFactory.createConnection({
@@ -70,4 +70,4 @@ export class StreamSeaClient extends EventEmitter {
   }
 }
 
-export const getStreamSeaClient = (options: StreamSeaClientOptions) => new StreamSeaClient({...options, connectionFactory: new StreamSeaConnectionFactory({})})
+export const getStreamSeaClient = (options: StreamSeaClientOptions) => new StreamSeaClient({ ...options, connectionFactory: new StreamSeaConnectionFactory({}) })

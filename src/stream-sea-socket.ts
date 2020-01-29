@@ -1,5 +1,5 @@
 import WebSocket from 'ws'
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events'
 
 const PING_INTERVAL_MS = 15000 // Interval for ping messages in milliseconds
 
@@ -13,13 +13,13 @@ interface StreamSeaSocketOptions {
 
 /**
  * A StreamSeaSocket encapsulates a WebSocket with automatic ping-pong.
- * 
+ *
  * Events:
  *   open
  *   message
  *   close
  *   error
- * 
+ *
  * Public methods:
  *   send(message: string)
  */
@@ -27,7 +27,7 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
   private ws: WebSocket
   private heartbeatInterval?: NodeJS.Timeout
   private options: StreamSeaSocketOptions
-  constructor(options: StreamSeaSocketOptions){
+  constructor(options: StreamSeaSocketOptions) {
     super()
     this.options = options
     this.ws = new WebSocket(this.options.url)
@@ -36,10 +36,12 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
     this.ws.on('close', this.onWsClose)
     this.ws.on('error', this.onWsError)
   }
-  
+
   private onWsOpen = () => {
     this.heartbeatInterval = setInterval(() => {
-      this.ws.ping(() => {return;})
+      this.ws.ping(() => {
+        return
+      })
     }, PING_INTERVAL_MS)
     this.emit('open')
   }
@@ -48,7 +50,7 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
     // console.log('StreamSeaSocket.onWsMessage:', JSON.stringify(m, null, 4))
     this.emit('message', m)
   }
-  
+
   private onWsClose = () => {
     // console.log('StreamSeaSocket.onWsClose')
     this.emit('close')
@@ -74,13 +76,11 @@ export interface IStreamSeaSocketFactory {
   createSocket: (options: StreamSeaSocketOptions) => IStreamSeaSocket
 }
 
-export interface StreamSeaSocketFactoryOptions {
-
-}
+export interface StreamSeaSocketFactoryOptions {}
 
 export class StreamSeaSocketFactory implements IStreamSeaSocketFactory {
   private options: StreamSeaSocketFactoryOptions
-  constructor(options: StreamSeaSocketFactoryOptions){
+  constructor(options: StreamSeaSocketFactoryOptions) {
     this.options = options
   }
   public createSocket = (options: StreamSeaSocketOptions) => {

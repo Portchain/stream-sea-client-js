@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 export interface IStreamSeaSubscription extends EventEmitter {
     streamName: string;
 }
