@@ -114,7 +114,8 @@ describe('StreamSeaConnection', () => {
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);
-        const errorHandler = jest.fn();
+        // Verify the correct error is thrown
+        const errorHandler = jest.fn((e) => expect(e.type).toBe('AuthenticationError'));
         connection.on('error', errorHandler);
         setTimeout(() => {
             // Verify a socket was created
@@ -123,6 +124,7 @@ describe('StreamSeaConnection', () => {
             expect(socketFactory.sockets[0].sendCallbacks.length).toBe(1);
             // Verify that the connection is not open
             expect(connection.status).toBe(stream_sea_connection_1.StreamSeaConnectionStatus.init);
+            // Verify that the error handler was called
             expect(errorHandler.mock.calls.length).toBe(1);
             done();
         }, 1000);
