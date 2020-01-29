@@ -4,18 +4,23 @@ import { StreamSeaClient } from "../stream-sea-client"
 import { StreamSeaSubscription } from "../stream-sea-subscription"
 
 class GoodConnection extends EventEmitter implements IStreamSeaConnection {
-  addSubscription = () => {return;}
+  public addSubscription: (subscription: StreamSeaSubscription) => void
+  constructor(addSubscription: (subscription: StreamSeaSubscription) => void){
+    super()
+    this.addSubscription = addSubscription
+  }
 }
 
 class UnconnectableConnection extends EventEmitter implements IStreamSeaConnection {
-  constructor(){
+  public addSubscription: (subscription: StreamSeaSubscription) => void
+  constructor(addSubscription: (subscription: StreamSeaSubscription) => void){
     super()
+    this.addSubscription = addSubscription
     setTimeout(() => {
       this.emit('warning', 'Could not connect')
       this.emit('close')
     })
   }
-  addSubscription = () => {return;}
 }
 
 /**
@@ -23,10 +28,14 @@ class UnconnectableConnection extends EventEmitter implements IStreamSeaConnecti
  */
 class GoodConnectionFactory implements IStreamSeaConnectionFactory {
   public tries = 0
+  public addSubscription: (subscription: StreamSeaSubscription) => void
+  constructor(addSubscription: (subscription: StreamSeaSubscription) => void){
+    this.addSubscription = addSubscription
+  }
   createConnection = () => {
     this.tries++
     if (this.tries === 1){
-      return new GoodConnection()
+      return new GoodConnection(this.addSubscription)
     } else {
       throw Error('Expected 1 try only')
     }
@@ -38,12 +47,16 @@ class GoodConnectionFactory implements IStreamSeaConnectionFactory {
  */
 class ThirdTimeLuckyConnectionFactory implements IStreamSeaConnectionFactory {
   public tries = 0
+  public addSubscription: (subscription: StreamSeaSubscription) => void
+  constructor(addSubscription: (subscription: StreamSeaSubscription) => void){
+    this.addSubscription = addSubscription
+  }
   createConnection = () => {
     this.tries++
     if (this.tries < 3){
-      return new UnconnectableConnection()
+      return new UnconnectableConnection(this.addSubscription)
     } else if (this.tries === 3){
-      return new GoodConnection()
+      return new GoodConnection(this.addSubscription)
     } else {
       throw Error('Expected 3 tries only')
     }
@@ -53,7 +66,8 @@ class ThirdTimeLuckyConnectionFactory implements IStreamSeaConnectionFactory {
 
 describe('StreamSeaClient', () => {
   it('subscription is passed through to the connection', done => {
-    const connectionFactory = new GoodConnectionFactory()
+    const mockAddSubscription = jest.fn()
+    const connectionFactory = new GoodConnectionFactory(mockAddSubscription)
     const client = new StreamSeaClient({
       appId: 'mockId',
       appSecret: 'mockSecret',
@@ -63,19 +77,20 @@ describe('StreamSeaClient', () => {
       connectionFactory,
     })
     const testSubscription = new StreamSeaSubscription('testStream')
-    ;(client as any).connection.addSubscription = (s: any) => {
-      // Verify that testSubscription was added to the connection
-      expect(s).toBe(testSubscription)
-      done()
-    }
     client.addSubscription(testSubscription)
+
     setTimeout(() => {
+      // Verify that a connection was created
       expect(connectionFactory.tries).toBe(1)
+      // Verify that the subscription was added to the connection
+      expect(mockAddSubscription.mock.calls.length).toBe(1)
+      expect(mockAddSubscription.mock.calls[0][0]).toBe(testSubscription)
       done()
     }, 1000)
   })
   it('client reconnects on the third attempt if the first two attempts fail', done => {
-    const connectionFactory = new ThirdTimeLuckyConnectionFactory()
+    const mockAddSubscription = jest.fn()
+    const connectionFactory = new ThirdTimeLuckyConnectionFactory(mockAddSubscription)
     const client = new StreamSeaClient({
       appId: 'mockId',
       appSecret: 'mockSecret',
@@ -84,9 +99,17 @@ describe('StreamSeaClient', () => {
       secure: false,
       connectionFactory,
     })
+    const testSubscription = new StreamSeaSubscription('testStream')
+    
     ;(client as any).RECONNECT_INTERVAL_MS = 1;
+    client.addSubscription(testSubscription)
+
     setTimeout(() => {
+      // Verify that 3 connections were created
       expect(connectionFactory.tries).toBe(3)
+      // Verify that the subscription was added to each of the 3 connections
+      expect(mockAddSubscription.mock.calls.length).toBe(3)
+      expect(mockAddSubscription.mock.calls.map(c => c[0] === testSubscription)).toEqual([true, true, true])
       done()
     }, 1000)
   })
