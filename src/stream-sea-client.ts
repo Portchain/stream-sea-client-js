@@ -1,9 +1,8 @@
 import { EventEmitter } from "events";
 import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionFactory, StreamSeaConnectionError, StreamSeaConnectionWarning } from "./stream-sea-connection";
 import { IStreamSeaSubscription } from "./stream-sea-subscription";
+import { getWsURLScheme } from "./utils";
 const logger = require('logacious')()
-
-const getWsURLScheme = (secure: boolean) => (secure ? 'wss' : 'ws')
 
 interface StreamSeaClientOptions {
   remoteServerHost: string

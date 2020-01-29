@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const stream_sea_connection_1 = require("./stream-sea-connection");
+const utils_1 = require("./utils");
 const logger = require('logacious')();
-const getWsURLScheme = (secure) => (secure ? 'wss' : 'ws');
 /**
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
  *
@@ -31,7 +31,7 @@ class StreamSeaClient extends events_1.EventEmitter {
         this.reopenConnection = () => {
             logger.warn('StreamSeaClient: Reopening connection');
             this.connection = this.options.connectionFactory.createConnection({
-                url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
+                url: `${utils_1.getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
                 appId: this.options.appId,
                 appSecret: this.options.appSecret,
             });
@@ -46,7 +46,7 @@ class StreamSeaClient extends events_1.EventEmitter {
         };
         this.options = options;
         this.connection = options.connectionFactory.createConnection({
-            url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
+            url: `${utils_1.getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
             appId: options.appId,
             appSecret: options.appSecret,
         });
