@@ -87,7 +87,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   }
 
   private onSocketOpen = () => {
-    this.sendSingleReply('authenticate', {
+    this.sendAndExpectSingleReply('authenticate', {
       username: this.options.appId,
       password: this.options.appSecret,
     })
@@ -190,7 +190,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   private checkSubscriptionsQueue() {
     if (this.status === StreamSeaConnectionStatus.open) {
       this.subscriptionsQueue.forEach(subscription => {
-        this.sendMultiReply(
+        this.sendAndExpectMultiReply(
           'subscribe',
           subscription.streamName,
           {
@@ -212,7 +212,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   /**
    * Send a message expecting a single reply
    */
-  private async sendSingleReply(action: string, payload: any): Promise<any> {
+  private async sendAndExpectSingleReply(action: string, payload: any): Promise<any> {
     const msgId = this.generateNextMessageId()
     this.socket.send(
       JSON.stringify({
@@ -235,7 +235,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   /**
    * Send a message expecting multiple replies
    */
-  private sendMultiReply(action: string, payload: any, firstReplyCallback: PromiseProxy, otherRepliesCallback: PromiseProxy) {
+  private sendAndExpectMultiReply(action: string, payload: any, firstReplyCallback: PromiseProxy, otherRepliesCallback: PromiseProxy) {
     const msgId = this.generateNextMessageId()
     this.socket.send(
       JSON.stringify({

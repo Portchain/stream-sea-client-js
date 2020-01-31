@@ -65,11 +65,11 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
     /**
      * Send a message expecting a single reply
      */
-    private sendSingleReply;
+    private sendAndExpectSingleReply;
     /**
      * Send a message expecting multiple replies
      */
-    private sendMultiReply;
+    private sendAndExpectMultiReply;
 }
 export interface IStreamSeaConnectionFactory {
     createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection;
