@@ -26,6 +26,8 @@ export class StreamSeaClient extends EventEmitter {
   private connection: IStreamSeaConnection
   private subscriptions: IStreamSeaSubscription[] = []
   private RECONNECT_INTERVAL_MS = 3000
+  private CONNECTION_FAILURE_ALERT_THRESHOLD = 20 // Log an error after this many consecutive failures
+  private consecutiveConnectionFailures = 0
 
   constructor(options: StreamSeaClientOptions & { connectionFactory: IStreamSeaConnectionFactory }) {
     super()
@@ -35,10 +37,15 @@ export class StreamSeaClient extends EventEmitter {
       appId: options.appId,
       appSecret: options.appSecret,
     })
+    this.connection.on('open', this.onConnectionOpen)
     this.connection.on('close', this.onConnectionClose)
     this.connection.on('error', this.onConnectionError)
     this.connection.on('warning', this.onConnectionWarning)
   }
+  private onConnectionOpen = () => {
+    this.consecutiveConnectionFailures = 0
+  }
+
   private onConnectionError = (e: StreamSeaConnectionError) => {
     this.emit('error', e)
   }
@@ -48,7 +55,13 @@ export class StreamSeaClient extends EventEmitter {
   }
 
   private onConnectionClose = () => {
-    logger.warn('StreamSeaClient: Connection closed')
+    this.consecutiveConnectionFailures++
+    const errorMessage = `StreamSeaClient: Connection closed for the ${this.consecutiveConnectionFailures} time consecutively`
+    if (this.consecutiveConnectionFailures === this.CONNECTION_FAILURE_ALERT_THRESHOLD){
+      logger.error(errorMessage)
+    } else {
+      logger.warn(errorMessage)
+    }
     setTimeout(this.reopenConnection, this.RECONNECT_INTERVAL_MS)
   }
 

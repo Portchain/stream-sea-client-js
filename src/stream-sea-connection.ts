@@ -61,6 +61,7 @@ export type StreamSeaConnectionWarning = ProtocolError | SocketError
  *
  * Events:
  *   message
+ *   open - a connection was established and authentication succeeded
  *   close - the underlying websocket has closed
  *   error - a non-recoverable error has occurred. The connection needs to be terminated
  *   warning - a recoverable error has occurred
@@ -92,6 +93,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
       password: this.options.appSecret,
     })
       .then(() => {
+        this.emit('open')
         this.status = StreamSeaConnectionStatus.open
         this.checkSubscriptionsQueue()
       })

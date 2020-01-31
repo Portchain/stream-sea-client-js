@@ -23,9 +23,12 @@ export declare class StreamSeaClient extends EventEmitter {
     private connection;
     private subscriptions;
     private RECONNECT_INTERVAL_MS;
+    private CONNECTION_FAILURE_ALERT_THRESHOLD;
+    private consecutiveConnectionFailures;
     constructor(options: StreamSeaClientOptions & {
         connectionFactory: IStreamSeaConnectionFactory;
     });
+    private onConnectionOpen;
     private onConnectionError;
     private onConnectionWarning;
     private onConnectionClose;
