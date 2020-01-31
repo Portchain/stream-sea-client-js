@@ -10,7 +10,7 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
   public sendCallbacks: Array<(m: any) => void> = [
     m => {
       expect(m.action).toBe('authenticate')
-      if (m.password === 'test_app_secret') {
+      if (m.payload.password === 'test_app_secret') {
         this.emit(
           'message',
           JSON.stringify({
@@ -115,7 +115,7 @@ describe('StreamSeaConnection', () => {
     const connection = new StreamSeaConnection({
       url: 'test_url',
       appId: 'test_app_id',
-      appSecret: 'test_app_secret',
+      appSecret: 'wrong_secret',
       socketFactory,
     })
     const subscription = new StreamSeaSubscription('testStream')

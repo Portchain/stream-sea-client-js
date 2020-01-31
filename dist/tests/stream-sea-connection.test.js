@@ -17,7 +17,7 @@ class BasicSocket extends events_1.EventEmitter {
         this.sendCallbacks = [
             m => {
                 expect(m.action).toBe('authenticate');
-                if (m.password === 'test_app_secret') {
+                if (m.payload.password === 'test_app_secret') {
                     this.emit('message', JSON.stringify({
                         id: m.id,
                         action: 'authenticate',
@@ -109,7 +109,7 @@ describe('StreamSeaConnection', () => {
         const connection = new stream_sea_connection_1.StreamSeaConnection({
             url: 'test_url',
             appId: 'test_app_id',
-            appSecret: 'test_app_secret',
+            appSecret: 'wrong_secret',
             socketFactory,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
