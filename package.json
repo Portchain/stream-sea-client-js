@@ -6,18 +6,22 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --runInBand --forceExit --detectOpenHandles --verbose false"
   },
   "author": "",
   "license": "Proprietary - Portchain ApS",
   "devDependencies": {
+    "@types/jest": "24.9.1",
+    "jest": "25.1.0",
     "prettier": "1.19.1",
+    "ts-jest": "25.0.0",
     "typescript": "3.7.4"
   },
   "dependencies": {
     "@types/request-promise-native": "^1.0.17",
+    "@types/ws": "^7.2.0",
     "logacious": "^0.4.0",
-    "request": "2.88.0",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.8",
     "ws": "^7.2.0"
   }
