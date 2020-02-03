@@ -20,6 +20,12 @@ class StreamSeaClient extends events_1.EventEmitter {
         this.RECONNECT_INTERVAL_MS = 3000;
         this.CONNECTION_FAILURE_ALERT_THRESHOLD = 20; // Log an error after this many consecutive failures
         this.consecutiveConnectionFailures = 0;
+        this.attachConnectionEventHandlers = () => {
+            this.connection.on('open', this.onConnectionOpen);
+            this.connection.on('close', this.onConnectionClose);
+            this.connection.on('error', this.onConnectionError);
+            this.connection.on('warning', this.onConnectionWarning);
+        };
         this.onConnectionOpen = () => {
             this.consecutiveConnectionFailures = 0;
         };
@@ -47,9 +53,7 @@ class StreamSeaClient extends events_1.EventEmitter {
                 appId: this.options.appId,
                 appSecret: this.options.appSecret,
             });
-            this.connection.on('close', this.onConnectionClose);
-            this.connection.on('error', this.onConnectionError);
-            this.connection.on('warning', this.onConnectionWarning);
+            this.attachConnectionEventHandlers();
             this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription));
         };
         this.addSubscription = (subscription) => {
@@ -62,10 +66,7 @@ class StreamSeaClient extends events_1.EventEmitter {
             appId: options.appId,
             appSecret: options.appSecret,
         });
-        this.connection.on('open', this.onConnectionOpen);
-        this.connection.on('close', this.onConnectionClose);
-        this.connection.on('error', this.onConnectionError);
-        this.connection.on('warning', this.onConnectionWarning);
+        this.attachConnectionEventHandlers();
     }
 }
 exports.StreamSeaClient = StreamSeaClient;

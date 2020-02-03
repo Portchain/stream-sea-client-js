@@ -37,11 +37,15 @@ export class StreamSeaClient extends EventEmitter {
       appId: options.appId,
       appSecret: options.appSecret,
     })
+    this.attachConnectionEventHandlers()
+  }
+  private attachConnectionEventHandlers = () => {
     this.connection.on('open', this.onConnectionOpen)
     this.connection.on('close', this.onConnectionClose)
     this.connection.on('error', this.onConnectionError)
     this.connection.on('warning', this.onConnectionWarning)
   }
+
   private onConnectionOpen = () => {
     this.consecutiveConnectionFailures = 0
   }
@@ -57,7 +61,7 @@ export class StreamSeaClient extends EventEmitter {
   private onConnectionClose = () => {
     this.consecutiveConnectionFailures++
     const errorMessage = `StreamSeaClient: Connection closed for the ${this.consecutiveConnectionFailures} time consecutively`
-    if (this.consecutiveConnectionFailures === this.CONNECTION_FAILURE_ALERT_THRESHOLD){
+    if (this.consecutiveConnectionFailures === this.CONNECTION_FAILURE_ALERT_THRESHOLD) {
       logger.error(errorMessage)
     } else {
       logger.warn(errorMessage)
@@ -72,9 +76,7 @@ export class StreamSeaClient extends EventEmitter {
       appId: this.options.appId,
       appSecret: this.options.appSecret,
     })
-    this.connection.on('close', this.onConnectionClose)
-    this.connection.on('error', this.onConnectionError)
-    this.connection.on('warning', this.onConnectionWarning)
+    this.attachConnectionEventHandlers()
     this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription))
   }
   public addSubscription = (subscription: IStreamSeaSubscription) => {

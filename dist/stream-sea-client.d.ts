@@ -28,6 +28,7 @@ export declare class StreamSeaClient extends EventEmitter {
     constructor(options: StreamSeaClientOptions & {
         connectionFactory: IStreamSeaConnectionFactory;
     });
+    private attachConnectionEventHandlers;
     private onConnectionOpen;
     private onConnectionError;
     private onConnectionWarning;
