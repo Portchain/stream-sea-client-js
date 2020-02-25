@@ -1,4 +1,4 @@
-import WebSocket from 'ws'
+const WebSocket = require('isomorphic-ws')
 import { EventEmitter } from 'events'
 
 const PING_INTERVAL_MS = 15000 // Interval for ping messages in milliseconds
@@ -24,7 +24,7 @@ interface StreamSeaSocketOptions {
  *   send(message: string)
  */
 export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
-  private ws: WebSocket
+  private ws: any
   private heartbeatInterval?: NodeJS.Timeout
   private options: StreamSeaSocketOptions
   constructor(options: StreamSeaSocketOptions) {
