@@ -15,7 +15,7 @@ jobs:
             # However, some type declarations may differ between minor compiler versions due to a typescript issue: https://github.com/microsoft/TypeScript/issues/17944
             # Therefore we exclude type declarations from the 'git diff' comparison
             # When the typescript issue is resolved, we can just use 'git diff'
-            - run: if [[ $(git diff -- . ':(exclude)dist/**/*.d.ts') ]]; then echo "Build output does not match checked-in assets"; git diff -- . ':(exclude)dist/**/*.d.ts'; exit 1; fi;
+            - run: if [[ $(git diff -- . ':(exclude)**/*.d.ts') ]]; then echo "Build output does not match checked-in assets"; git diff -- . ':(exclude)**/*.d.ts'; exit 1; fi;
             - run: npm test
 workflows:
     build-and-test:
