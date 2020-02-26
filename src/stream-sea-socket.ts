@@ -11,6 +11,15 @@ interface StreamSeaSocketOptions {
   url: string
 }
 
+interface IsomorphicWebsocket {
+  onopen: null | (() => void)
+  onmessage: null | ((m: MessageEvent) => void)
+  onclose: null | (() => void)
+  onerror: null | ((e: any) => void)
+  ping?: (callback: () => void) => void
+  send: (message: string) => void
+}
+
 /**
  * A StreamSeaSocket encapsulates a WebSocket with automatic ping-pong.
  *
@@ -24,7 +33,7 @@ interface StreamSeaSocketOptions {
  *   send(message: string)
  */
 export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
-  private ws: any
+  private ws: IsomorphicWebsocket
   private heartbeatInterval?: NodeJS.Timeout
   private options: StreamSeaSocketOptions
   constructor(options: StreamSeaSocketOptions) {
@@ -49,7 +58,7 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
     this.emit('open')
   }
 
-  private onWsMessage = (m: any) => {
+  private onWsMessage = (m: MessageEvent) => {
     // console.log('StreamSeaSocket.onWsMessage:', JSON.stringify(m, null, 4))
     this.emit('message', m)
   }
