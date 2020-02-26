@@ -18,35 +18,41 @@ class BasicSocket extends events_1.EventEmitter {
             m => {
                 expect(m.action).toBe('authenticate');
                 if (m.payload.password === 'test_app_secret') {
-                    this.emit('message', JSON.stringify({
-                        id: m.id,
-                        action: 'authenticate',
-                        success: true,
-                        payload: {
-                            jailId: 'some_jail',
-                        },
-                    }));
+                    this.emit('message', {
+                        data: JSON.stringify({
+                            id: m.id,
+                            action: 'authenticate',
+                            success: true,
+                            payload: {
+                                jailId: 'some_jail',
+                            },
+                        }),
+                    });
                 }
                 else {
-                    this.emit('message', JSON.stringify({
-                        id: m.id,
-                        action: 'authenticate',
-                        success: false,
-                        error: {
-                            message: 'Invalid credentials',
-                        },
-                    }));
+                    this.emit('message', {
+                        data: JSON.stringify({
+                            id: m.id,
+                            action: 'authenticate',
+                            success: false,
+                            error: {
+                                message: 'Invalid credentials',
+                            },
+                        }),
+                    });
                 }
             },
             m => {
                 expect(m.action).toBe('subscribe');
                 this.subscriptionKey = m.id;
-                this.emit('message', JSON.stringify({
-                    id: m.id,
-                    action: 'subscription',
-                    success: true,
-                    payload: m.id,
-                }));
+                this.emit('message', {
+                    data: JSON.stringify({
+                        id: m.id,
+                        action: 'subscription',
+                        success: true,
+                        payload: m.id,
+                    }),
+                });
             },
         ];
         this.send = (m) => {
@@ -58,14 +64,16 @@ class BasicSocket extends events_1.EventEmitter {
     }
     emitSubscriptionMessage() {
         assert.ok(this.subscriptionKey);
-        this.emit('message', JSON.stringify({
-            id: this.subscriptionKey,
-            action: 'subscription',
-            streamName: 'testStream',
-            payload: {
-                foo: 'bar',
-            },
-        }));
+        this.emit('message', {
+            data: JSON.stringify({
+                id: this.subscriptionKey,
+                action: 'subscription',
+                streamName: 'testStream',
+                payload: {
+                    foo: 'bar',
+                },
+            })
+        });
     }
 }
 class BasicSocketFactory {
