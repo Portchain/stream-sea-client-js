@@ -20,9 +20,12 @@ class StreamSeaSocket extends events_1.EventEmitter {
         super();
         this.onWsOpen = () => {
             this.heartbeatInterval = setInterval(() => {
-                this.ws.ping(() => {
-                    return;
-                });
+                // this.ws.ping is available on Nodejs but not in the browser
+                if (this.ws.ping) {
+                    this.ws.ping(() => {
+                        return;
+                    });
+                }
             }, PING_INTERVAL_MS);
             this.emit('open');
         };
@@ -47,10 +50,10 @@ class StreamSeaSocket extends events_1.EventEmitter {
         };
         this.options = options;
         this.ws = new WebSocket(this.options.url);
-        this.ws.on('open', this.onWsOpen);
-        this.ws.on('message', this.onWsMessage);
-        this.ws.on('close', this.onWsClose);
-        this.ws.on('error', this.onWsError);
+        this.ws.onopen = this.onWsOpen;
+        this.ws.onmessage = this.onWsMessage;
+        this.ws.onclose = this.onWsClose;
+        this.ws.onerror = this.onWsError;
     }
 }
 exports.StreamSeaSocket = StreamSeaSocket;
