@@ -11,7 +11,7 @@ jobs:
           steps:
             - run: npm install
             - run: npm run build
-            - run: if [[ $(git diff) ]]; then echo "Build output does not match checked-in assets"; exit 1; fi;
+            - run: if [[ $(git diff) ]]; then echo "Build output does not match checked-in assets"; git diff; exit 1; fi;
             - run: npm test
 workflows:
     build-and-test:
