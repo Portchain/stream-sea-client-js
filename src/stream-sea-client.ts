@@ -25,7 +25,7 @@ export class StreamSeaClient extends EventEmitter {
   private options: StreamSeaClientOptions & { connectionFactory: IStreamSeaConnectionFactory }
   private connection: IStreamSeaConnection
   private subscriptions: IStreamSeaSubscription[] = []
-  private RECONNECT_INTERVAL_MS = 3000
+  private RECONNECT_INTERVAL_MS = 4000
   private CONNECTION_FAILURE_ALERT_THRESHOLD = 20 // Log an error after this many consecutive failures
   private consecutiveConnectionFailures = 0
 
