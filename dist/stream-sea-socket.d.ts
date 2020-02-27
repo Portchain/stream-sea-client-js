@@ -20,7 +20,6 @@ interface StreamSeaSocketOptions {
  */
 export declare class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
     private ws;
-    private heartbeatInterval?;
     private options;
     constructor(options: StreamSeaSocketOptions);
     private onWsOpen;
