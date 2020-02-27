@@ -48,7 +48,8 @@ class StreamSeaConnection extends events_1.EventEmitter {
                 this.emit('error', err);
             });
         };
-        this.onSocketMessage = (msgStr) => {
+        this.onSocketMessage = (msgEvent) => {
+            const msgStr = msgEvent.data;
             let msg;
             try {
                 msg = JSON.parse(msgStr);

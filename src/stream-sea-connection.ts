@@ -106,7 +106,8 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
       })
   }
 
-  private onSocketMessage = (msgStr: string) => {
+  private onSocketMessage = (msgEvent: MessageEvent) => {
+    const msgStr: string = msgEvent.data
     let msg: any
     try {
       msg = JSON.parse(msgStr)

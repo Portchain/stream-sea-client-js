@@ -1,4 +1,4 @@
-import WebSocket from 'ws'
+const WebSocket = require('isomorphic-ws')
 import { EventEmitter } from 'events'
 
 const PING_INTERVAL_MS = 15000 // Interval for ping messages in milliseconds
@@ -9,6 +9,15 @@ export interface IStreamSeaSocket extends EventEmitter {
 
 interface StreamSeaSocketOptions {
   url: string
+}
+
+interface IsomorphicWebsocket {
+  onopen: null | (() => void)
+  onmessage: null | ((m: MessageEvent) => void)
+  onclose: null | (() => void)
+  onerror: null | ((e: any) => void)
+  ping?: (callback: () => void) => void
+  send: (message: string) => void
 }
 
 /**
@@ -24,29 +33,32 @@ interface StreamSeaSocketOptions {
  *   send(message: string)
  */
 export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
-  private ws: WebSocket
+  private ws: IsomorphicWebsocket
   private heartbeatInterval?: NodeJS.Timeout
   private options: StreamSeaSocketOptions
   constructor(options: StreamSeaSocketOptions) {
     super()
     this.options = options
     this.ws = new WebSocket(this.options.url)
-    this.ws.on('open', this.onWsOpen)
-    this.ws.on('message', this.onWsMessage)
-    this.ws.on('close', this.onWsClose)
-    this.ws.on('error', this.onWsError)
+    this.ws.onopen = this.onWsOpen
+    this.ws.onmessage = this.onWsMessage
+    this.ws.onclose = this.onWsClose
+    this.ws.onerror = this.onWsError
   }
 
   private onWsOpen = () => {
     this.heartbeatInterval = setInterval(() => {
-      this.ws.ping(() => {
-        return
-      })
+      // this.ws.ping is available on Nodejs but not in the browser
+      if (this.ws.ping){
+        this.ws.ping(() => {
+          return
+        })
+      }
     }, PING_INTERVAL_MS)
     this.emit('open')
   }
 
-  private onWsMessage = (m: any) => {
+  private onWsMessage = (m: MessageEvent) => {
     // console.log('StreamSeaSocket.onWsMessage:', JSON.stringify(m, null, 4))
     this.emit('message', m)
   }

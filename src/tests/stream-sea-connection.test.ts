@@ -13,26 +13,30 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
       if (m.payload.password === 'test_app_secret') {
         this.emit(
           'message',
-          JSON.stringify({
-            id: m.id,
-            action: 'authenticate',
-            success: true,
-            payload: {
-              jailId: 'some_jail',
-            },
-          })
+          {
+            data: JSON.stringify({
+              id: m.id,
+              action: 'authenticate',
+              success: true,
+              payload: {
+                jailId: 'some_jail',
+              },
+            }),
+          }
         )
       } else {
         this.emit(
           'message',
-          JSON.stringify({
-            id: m.id,
-            action: 'authenticate',
-            success: false,
-            error: {
-              message: 'Invalid credentials',
-            },
-          })
+          {
+            data: JSON.stringify({
+              id: m.id,
+              action: 'authenticate',
+              success: false,
+              error: {
+                message: 'Invalid credentials',
+              },
+            }),
+          }
         )
       }
     },
@@ -41,12 +45,14 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
       this.subscriptionKey = m.id
       this.emit(
         'message',
-        JSON.stringify({
-          id: m.id,
-          action: 'subscription',
-          success: true,
-          payload: m.id,
-        })
+        {
+          data: JSON.stringify({
+            id: m.id,
+            action: 'subscription',
+            success: true,
+            payload: m.id,
+          }),
+        }
       )
     },
   ]
@@ -63,14 +69,16 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
     assert.ok(this.subscriptionKey)
     this.emit(
       'message',
-      JSON.stringify({
-        id: this.subscriptionKey,
-        action: 'subscription',
-        streamName: 'testStream',
-        payload: {
-          foo: 'bar',
-        },
-      })
+      {
+        data: JSON.stringify({
+          id: this.subscriptionKey,
+          action: 'subscription',
+          streamName: 'testStream',
+          payload: {
+            foo: 'bar',
+          },
+        })
+      }
     )
   }
 }
