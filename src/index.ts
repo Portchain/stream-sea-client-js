@@ -5,7 +5,7 @@ import { getStreamSeaClient } from './stream-sea-client'
 import { StreamSeaSubscription } from './stream-sea-subscription'
 import { getHttpURLScheme } from './utils'
 
-export const subscribe = async (args: Remote & Stream & {fanout: boolean}) => {
+export const subscribe = async (args: Remote & Stream & {fanout?: boolean}) => {
   const client = getStreamSeaClient(args)
   const subscription = new StreamSeaSubscription(args.stream)
   client.addSubscription(subscription)
