@@ -1,3 +1,6 @@
+### Compatibility
+This library is compatible with stream-sea ^1.1.0 (i.e. 1.1.0 <= stream-sea < 2.0)
+
 ### For users
 
 ### For developers
