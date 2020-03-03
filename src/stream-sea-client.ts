@@ -3,13 +3,13 @@ import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionF
 import { IStreamSeaSubscription } from './stream-sea-subscription'
 import { getWsURLScheme } from './utils'
 import * as logger from './logger'
+import { CredentialOptions } from './types'
 
-interface StreamSeaClientOptions {
+type StreamSeaClientOptions = {
   remoteServerHost: string
   remoteServerPort: string
   secure: boolean
-  appId: string
-  appSecret: string
+  credentialOptions: CredentialOptions
   fanout?: boolean
 }
 
@@ -35,8 +35,7 @@ export class StreamSeaClient extends EventEmitter {
     this.options = options
     this.connection = options.connectionFactory.createConnection({
       url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
-      appId: options.appId,
-      appSecret: options.appSecret,
+      credentialOptions: options.credentialOptions,
       fanout: !!options.fanout,
     })
     this.attachConnectionEventHandlers()
@@ -75,8 +74,7 @@ export class StreamSeaClient extends EventEmitter {
     logger.warn('StreamSeaClient: Reopening connection')
     this.connection = this.options.connectionFactory.createConnection({
       url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
-      appId: this.options.appId,
-      appSecret: this.options.appSecret,
+      credentialOptions: this.options.credentialOptions,
       fanout: !!this.options.fanout,
     })
     this.attachConnectionEventHandlers()

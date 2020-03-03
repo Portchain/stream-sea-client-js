@@ -2,14 +2,14 @@
 import { EventEmitter } from 'events';
 import { IStreamSeaConnectionFactory } from './stream-sea-connection';
 import { IStreamSeaSubscription } from './stream-sea-subscription';
-interface StreamSeaClientOptions {
+import { CredentialOptions } from './types';
+declare type StreamSeaClientOptions = {
     remoteServerHost: string;
     remoteServerPort: string;
     secure: boolean;
-    appId: string;
-    appSecret: string;
+    credentialOptions: CredentialOptions;
     fanout?: boolean;
-}
+};
 /**
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
  *

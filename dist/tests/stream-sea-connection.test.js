@@ -91,8 +91,11 @@ describe('StreamSeaConnection', () => {
         const socketFactory = new BasicSocketFactory();
         const connection = new stream_sea_connection_1.StreamSeaConnection({
             url: 'test_url',
-            appId: 'test_app_id',
-            appSecret: 'test_app_secret',
+            credentialOptions: {
+                type: 'secret',
+                appId: 'test_app_id',
+                secret: 'test_app_secret',
+            },
             socketFactory,
             fanout: false,
         });
@@ -117,8 +120,11 @@ describe('StreamSeaConnection', () => {
         const socketFactory = new BasicSocketFactory();
         const connection = new stream_sea_connection_1.StreamSeaConnection({
             url: 'test_url',
-            appId: 'test_app_id',
-            appSecret: 'wrong_secret',
+            credentialOptions: {
+                type: 'secret',
+                appId: 'test_app_id',
+                secret: 'wrong_secret',
+            },
             socketFactory,
             fanout: false,
         });

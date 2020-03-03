@@ -63,8 +63,11 @@ describe('StreamSeaClient', () => {
         const mockAddSubscription = jest.fn();
         const connectionFactory = new GoodConnectionFactory(mockAddSubscription);
         const client = new stream_sea_client_1.StreamSeaClient({
-            appId: 'mockId',
-            appSecret: 'mockSecret',
+            credentialOptions: {
+                type: 'secret',
+                appId: 'mockId',
+                secret: 'mockSecret',
+            },
             remoteServerHost: 'mockHost',
             remoteServerPort: '101',
             secure: false,
@@ -85,8 +88,11 @@ describe('StreamSeaClient', () => {
         const mockAddSubscription = jest.fn();
         const connectionFactory = new ThirdTimeLuckyConnectionFactory(mockAddSubscription);
         const client = new stream_sea_client_1.StreamSeaClient({
-            appId: 'mockId',
-            appSecret: 'mockSecret',
+            credentialOptions: {
+                type: 'secret',
+                appId: 'mockId',
+                secret: 'mockSecret',
+            },
             remoteServerHost: 'mockHost',
             remoteServerPort: '101',
             secure: false,

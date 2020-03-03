@@ -9,7 +9,27 @@ const stream_sea_client_1 = require("./stream-sea-client");
 const stream_sea_subscription_1 = require("./stream-sea-subscription");
 const utils_1 = require("./utils");
 exports.subscribe = async (args) => {
-    const client = stream_sea_client_1.getStreamSeaClient(args);
+    const client = stream_sea_client_1.getStreamSeaClient({
+        ...args,
+        credentialOptions: {
+            type: 'secret',
+            appId: args.appId,
+            secret: args.appSecret,
+        }
+    });
+    const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
+    client.addSubscription(subscription);
+    return subscription;
+};
+exports.subscribeWithJwt = async (args) => {
+    const client = stream_sea_client_1.getStreamSeaClient({
+        ...args,
+        credentialOptions: {
+            type: 'jwt',
+            appId: args.appId,
+            jwt: args.jwt,
+        },
+    });
     const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
     client.addSubscription(subscription);
     return subscription;
