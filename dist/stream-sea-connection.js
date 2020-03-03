@@ -139,7 +139,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
     checkSubscriptionsQueue() {
         if (this.status === StreamSeaConnectionStatus.open) {
             this.subscriptionsQueue.forEach(subscription => {
-                this.sendAndExpectMultiReply('subscribe', subscription.streamName, {
+                this.sendAndExpectMultiReply('subscribe', subscription.streamName, this.options.fanout, {
                     resolve: (m) => {
                         return;
                     },
@@ -175,12 +175,13 @@ class StreamSeaConnection extends events_1.EventEmitter {
     /**
      * Send a message expecting multiple replies
      */
-    sendAndExpectMultiReply(action, payload, firstReplyCallback, otherRepliesCallback) {
+    sendAndExpectMultiReply(action, payload, fanout, firstReplyCallback, otherRepliesCallback) {
         const msgId = this.generateNextMessageId();
         this.socket.send(JSON.stringify({
             id: msgId,
             action,
             payload,
+            fanout,
         }));
         this.callbacksMap.set(msgId, {
             type: 'MultiReply',

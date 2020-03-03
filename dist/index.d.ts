@@ -1,6 +1,8 @@
 import { Stream, Remote, SchemaDefinition } from './types';
 import { StreamSeaSubscription } from './stream-sea-subscription';
-export declare const subscribe: (args: Remote & Stream) => Promise<StreamSeaSubscription>;
+export declare const subscribe: (args: Remote & Stream & {
+    fanout?: boolean | undefined;
+}) => Promise<StreamSeaSubscription>;
 export declare const publish: (args: Remote & Stream & {
     payload: any;
 }) => Promise<any>;

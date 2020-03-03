@@ -8,6 +8,7 @@ interface StreamSeaClientOptions {
     secure: boolean;
     appId: string;
     appSecret: string;
+    fanout?: boolean;
 }
 /**
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary

@@ -94,6 +94,7 @@ describe('StreamSeaConnection', () => {
             appId: 'test_app_id',
             appSecret: 'test_app_secret',
             socketFactory,
+            fanout: false,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);
@@ -119,6 +120,7 @@ describe('StreamSeaConnection', () => {
             appId: 'test_app_id',
             appSecret: 'wrong_secret',
             socketFactory,
+            fanout: false,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);

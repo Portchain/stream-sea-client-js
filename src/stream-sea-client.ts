@@ -10,6 +10,7 @@ interface StreamSeaClientOptions {
   secure: boolean
   appId: string
   appSecret: string
+  fanout?: boolean
 }
 
 /**
@@ -36,6 +37,7 @@ export class StreamSeaClient extends EventEmitter {
       url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
       appId: options.appId,
       appSecret: options.appSecret,
+      fanout: !!options.fanout,
     })
     this.attachConnectionEventHandlers()
   }
@@ -75,6 +77,7 @@ export class StreamSeaClient extends EventEmitter {
       url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
       appId: this.options.appId,
       appSecret: this.options.appSecret,
+      fanout: !!this.options.fanout,
     })
     this.attachConnectionEventHandlers()
     this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription))
