@@ -10,6 +10,7 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
   public sendCallbacks: Array<(m: any) => void> = [
     m => {
       expect(m.action).toBe('authenticate')
+      expect(m.payload.type).toBe('basic')
       if (m.payload.clientSecret === 'test_client_secret') {
         this.emit(
           'message',
