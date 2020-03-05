@@ -6,8 +6,8 @@ interface StreamSeaClientOptions {
     remoteServerHost: string;
     remoteServerPort: string;
     secure: boolean;
-    appId: string;
-    appSecret: string;
+    clientId: string;
+    clientSecret: string;
     fanout?: boolean;
 }
 /**

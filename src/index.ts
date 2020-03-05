@@ -17,7 +17,7 @@ export const publish = async (args: Remote & Stream & { payload: any }) => {
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/publish`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'POST',
     gzip: true,
@@ -31,7 +31,7 @@ export const defineStream = async (args: Remote & Stream & SchemaDefinition) => 
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/define`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'POST',
     gzip: true,
@@ -45,7 +45,7 @@ export const describeStream = async (args: Remote & Stream & SchemaDefinition) =
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'GET',
     gzip: true,
@@ -59,7 +59,7 @@ export const createClient = async (args: Remote & { description: string }) => {
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'POST',
     gzip: true,
@@ -73,7 +73,7 @@ export const deleteClient = async (args: Remote & { clientId: string }) => {
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'DELETE',
     gzip: true,
@@ -86,7 +86,7 @@ export const rotateClientSecret = async (args: Remote & { clientId: string }) =>
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'PUT',
     gzip: true,

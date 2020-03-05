@@ -9,8 +9,8 @@ interface StreamSeaClientOptions {
   remoteServerHost: string
   remoteServerPort: string
   secure: boolean
-  appId: string
-  appSecret: string
+  clientId: string
+  clientSecret: string
   fanout?: boolean
 }
 
@@ -38,8 +38,8 @@ export class StreamSeaClient extends EventEmitter {
     this.groupId = options.fanout ? uuid() : undefined
     this.connection = options.connectionFactory.createConnection({
       url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
-      appId: options.appId,
-      appSecret: options.appSecret,
+      clientId: options.clientId,
+      clientSecret: options.clientSecret,
       groupId: this.groupId,
     })
     this.attachConnectionEventHandlers()
@@ -78,8 +78,8 @@ export class StreamSeaClient extends EventEmitter {
     logger.warn('StreamSeaClient: Reopening connection')
     this.connection = this.options.connectionFactory.createConnection({
       url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
-      appId: this.options.appId,
-      appSecret: this.options.appSecret,
+      clientId: this.options.clientId,
+      clientSecret: this.options.clientSecret,
       groupId: this.groupId,
     })
     this.attachConnectionEventHandlers()

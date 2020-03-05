@@ -13,8 +13,8 @@ export interface IStreamSeaConnection extends EventEmitter {
 
 export interface StreamSeaConnectionOptions {
   url: string
-  appId: string
-  appSecret: string
+  clientId: string
+  clientSecret: string
   groupId: string | undefined
 }
 
@@ -90,8 +90,8 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
 
   private onSocketOpen = () => {
     this.sendAndExpectSingleReply('authenticate', {
-      username: this.options.appId,
-      password: this.options.appSecret,
+      username: this.options.clientId,
+      password: this.options.clientSecret,
     })
       .then(() => {
         this.emit('open')
