@@ -17,7 +17,8 @@ class BasicSocket extends events_1.EventEmitter {
         this.sendCallbacks = [
             m => {
                 expect(m.action).toBe('authenticate');
-                if (m.payload.password === 'test_app_secret') {
+                expect(m.payload.type).toBe('basic');
+                if (m.payload.clientSecret === 'test_client_secret') {
                     this.emit('message', {
                         data: JSON.stringify({
                             id: m.id,
@@ -92,12 +93,12 @@ describe('StreamSeaConnection', () => {
         const connection = new stream_sea_connection_1.StreamSeaConnection({
             url: 'test_url',
             credentialOptions: {
-                type: 'secret',
-                appId: 'test_app_id',
-                secret: 'test_app_secret',
+                type: 'basic',
+                clientId: 'test_client_id',
+                clientSecret: 'test_client_secret',
             },
             socketFactory,
-            fanout: false,
+            groupId: undefined,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);
@@ -121,12 +122,12 @@ describe('StreamSeaConnection', () => {
         const connection = new stream_sea_connection_1.StreamSeaConnection({
             url: 'test_url',
             credentialOptions: {
-                type: 'secret',
-                appId: 'test_app_id',
-                secret: 'wrong_secret',
+                type: 'basic',
+                clientId: 'test_client_id',
+                clientSecret: 'wrong_secret',
             },
             socketFactory,
-            fanout: false,
+            groupId: undefined,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);

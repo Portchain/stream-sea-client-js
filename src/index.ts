@@ -5,13 +5,14 @@ import { getStreamSeaClient } from './stream-sea-client'
 import { StreamSeaSubscription } from './stream-sea-subscription'
 import { getHttpURLScheme } from './utils'
 
-export const subscribe = async (args: Remote & Stream & {appSecret: string, fanout?: boolean}) => {
+// Subscribe with basic credentials
+export const subscribe = async (args: Remote & Stream & {clientSecret: string, fanout?: boolean}) => {
   const client = getStreamSeaClient({
     ...args,
     credentialOptions: {
-      type: 'secret',
-      appId: args.appId,
-      secret: args.appSecret,
+      type: 'basic',
+      clientId: args.clientId,
+      clientSecret: args.clientSecret,
     }
   })
   const subscription = new StreamSeaSubscription(args.stream)
@@ -19,12 +20,13 @@ export const subscribe = async (args: Remote & Stream & {appSecret: string, fano
   return subscription
 }
 
+// Subscribe with JWT credentials
 export const subscribeWithJwt = async (args: Remote & Stream & {jwt: string, fanout?: boolean}) => {
   const client = getStreamSeaClient({
     ...args,
     credentialOptions: {
       type: 'jwt',
-      appId: args.appId,
+      clientId: args.clientId,
       jwt: args.jwt,
     },
   })
@@ -33,12 +35,12 @@ export const subscribeWithJwt = async (args: Remote & Stream & {jwt: string, fan
   return subscription
 }
 
-export const publish = async (args: Remote & Stream & { appSecret: string, payload: any }) => {
+export const publish = async (args: Remote & Stream & { clientSecret: string, payload: any }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/publish`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'POST',
     gzip: true,
@@ -47,12 +49,12 @@ export const publish = async (args: Remote & Stream & { appSecret: string, paylo
   })
 }
 
-export const defineStream = async (args: Remote & Stream & {appSecret: string} & SchemaDefinition) => {
+export const defineStream = async (args: Remote & Stream & {clientSecret: string} & SchemaDefinition) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/define`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'POST',
     gzip: true,
@@ -61,12 +63,12 @@ export const defineStream = async (args: Remote & Stream & {appSecret: string} &
   })
 }
 
-export const describeStream = async (args: Remote & Stream & {appSecret: string} & SchemaDefinition) => {
+export const describeStream = async (args: Remote & Stream & {clientSecret: string} & SchemaDefinition) => {
   const a = {
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'GET',
     gzip: true,
@@ -75,12 +77,12 @@ export const describeStream = async (args: Remote & Stream & {appSecret: string}
   return await request(a)
 }
 
-export const createClient = async (args: Remote & { appSecret: string, description: string }) => {
+export const createClient = async (args: Remote & { clientSecret: string, description: string }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'POST',
     gzip: true,
@@ -89,12 +91,12 @@ export const createClient = async (args: Remote & { appSecret: string, descripti
   })
 }
 
-export const deleteClient = async (args: Remote & { appSecret: string, clientId: string }) => {
+export const deleteClient = async (args: Remote & { clientSecret: string, clientId: string }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'DELETE',
     gzip: true,
@@ -102,12 +104,12 @@ export const deleteClient = async (args: Remote & { appSecret: string, clientId:
   })
 }
 
-export const rotateClientSecret = async (args: Remote & { appSecret: string, clientId: string }) => {
+export const rotateClientSecret = async (args: Remote & { clientSecret: string, clientId: string }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {
       'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
     },
     method: 'PUT',
     gzip: true,

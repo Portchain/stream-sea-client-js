@@ -33,12 +33,12 @@ class StreamSeaConnection extends events_1.EventEmitter {
         this.onSocketOpen = () => {
             const authPayload = this.options.credentialOptions.type === 'jwt' ? {
                 type: 'jwt',
-                clientId: this.options.credentialOptions.appId,
+                clientId: this.options.credentialOptions.clientId,
                 jwt: this.options.credentialOptions.jwt,
             } : {
-                type: 'secret',
-                username: this.options.credentialOptions.appId,
-                password: this.options.credentialOptions.secret,
+                type: 'basic',
+                clientId: this.options.credentialOptions.clientId,
+                clientSecret: this.options.credentialOptions.clientSecret,
             };
             this.sendAndExpectSingleReply('authenticate', authPayload)
                 .then(() => {
@@ -145,7 +145,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
     checkSubscriptionsQueue() {
         if (this.status === StreamSeaConnectionStatus.open) {
             this.subscriptionsQueue.forEach(subscription => {
-                this.sendAndExpectMultiReply('subscribe', subscription.streamName, this.options.fanout, {
+                this.sendAndExpectMultiReply('subscribe', subscription.streamName, this.options.groupId, {
                     resolve: (m) => {
                         return;
                     },
@@ -181,13 +181,13 @@ class StreamSeaConnection extends events_1.EventEmitter {
     /**
      * Send a message expecting multiple replies
      */
-    sendAndExpectMultiReply(action, payload, fanout, firstReplyCallback, otherRepliesCallback) {
+    sendAndExpectMultiReply(action, payload, groupId, firstReplyCallback, otherRepliesCallback) {
         const msgId = this.generateNextMessageId();
         this.socket.send(JSON.stringify({
             id: msgId,
             action,
             payload,
-            fanout,
+            groupId,
         }));
         this.callbacksMap.set(msgId, {
             type: 'MultiReply',

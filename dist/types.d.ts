@@ -1,5 +1,5 @@
 export interface Remote {
-    appId: string;
+    clientId: string;
     remoteServerHost: string;
     remoteServerPort: string;
     secure: boolean;
@@ -38,14 +38,14 @@ export interface SchemaDefinition extends Schema {
     name: string;
     version: number;
 }
-export declare type SecretCredentialOptions = {
-    type: 'secret';
-    appId: string;
-    secret: string;
+export declare type BasicCredentialOptions = {
+    type: 'basic';
+    clientId: string;
+    clientSecret: string;
 };
 export declare type JwtCredentialOptions = {
     type: 'jwt';
-    appId: string;
+    clientId: string;
     jwt: string;
 };
-export declare type CredentialOptions = SecretCredentialOptions | JwtCredentialOptions;
+export declare type CredentialOptions = BasicCredentialOptions | JwtCredentialOptions;

@@ -8,25 +8,27 @@ const request_promise_native_1 = __importDefault(require("request-promise-native
 const stream_sea_client_1 = require("./stream-sea-client");
 const stream_sea_subscription_1 = require("./stream-sea-subscription");
 const utils_1 = require("./utils");
+// Subscribe with basic credentials
 exports.subscribe = async (args) => {
     const client = stream_sea_client_1.getStreamSeaClient({
         ...args,
         credentialOptions: {
-            type: 'secret',
-            appId: args.appId,
-            secret: args.appSecret,
+            type: 'basic',
+            clientId: args.clientId,
+            clientSecret: args.clientSecret,
         }
     });
     const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
     client.addSubscription(subscription);
     return subscription;
 };
+// Subscribe with JWT credentials
 exports.subscribeWithJwt = async (args) => {
     const client = stream_sea_client_1.getStreamSeaClient({
         ...args,
         credentialOptions: {
             type: 'jwt',
-            appId: args.appId,
+            clientId: args.clientId,
             jwt: args.jwt,
         },
     });
@@ -39,7 +41,7 @@ exports.publish = async (args) => {
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/publish`,
         headers: {
             'content-type': 'application/json',
-            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
         },
         method: 'POST',
         gzip: true,
@@ -52,7 +54,7 @@ exports.defineStream = async (args) => {
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/define`,
         headers: {
             'content-type': 'application/json',
-            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
         },
         method: 'POST',
         gzip: true,
@@ -65,7 +67,7 @@ exports.describeStream = async (args) => {
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
         headers: {
             'content-type': 'application/json',
-            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
         },
         method: 'GET',
         gzip: true,
@@ -78,7 +80,7 @@ exports.createClient = async (args) => {
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
         headers: {
             'content-type': 'application/json',
-            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
         },
         method: 'POST',
         gzip: true,
@@ -91,7 +93,7 @@ exports.deleteClient = async (args) => {
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
         headers: {
             'content-type': 'application/json',
-            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
         },
         method: 'DELETE',
         gzip: true,
@@ -103,7 +105,7 @@ exports.rotateClientSecret = async (args) => {
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
         headers: {
             'content-type': 'application/json',
-            authorization: 'Basic ' + Buffer.from(`${args.appId}:${args.appSecret}`).toString('base64'),
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
         },
         method: 'PUT',
         gzip: true,
