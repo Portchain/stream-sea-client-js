@@ -17,7 +17,7 @@ class BasicSocket extends events_1.EventEmitter {
         this.sendCallbacks = [
             m => {
                 expect(m.action).toBe('authenticate');
-                if (m.payload.password === 'test_client_secret') {
+                if (m.payload.clientSecret === 'test_client_secret') {
                     this.emit('message', {
                         data: JSON.stringify({
                             id: m.id,
