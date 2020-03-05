@@ -9,7 +9,7 @@ export interface StreamSeaConnectionOptions {
     url: string;
     appId: string;
     appSecret: string;
-    fanout: boolean;
+    groupId: string | undefined;
 }
 export declare enum StreamSeaConnectionStatus {
     init = "init",
