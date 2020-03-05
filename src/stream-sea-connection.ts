@@ -90,6 +90,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
 
   private onSocketOpen = () => {
     this.sendAndExpectSingleReply('authenticate', {
+      type: 'basic',
       clientId: this.options.clientId,
       clientSecret: this.options.clientSecret,
     })
