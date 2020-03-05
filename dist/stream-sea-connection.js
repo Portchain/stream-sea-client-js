@@ -32,8 +32,8 @@ class StreamSeaConnection extends events_1.EventEmitter {
         this.callbacksMap = new Map();
         this.onSocketOpen = () => {
             this.sendAndExpectSingleReply('authenticate', {
-                username: this.options.clientId,
-                password: this.options.clientSecret,
+                clientId: this.options.clientId,
+                clientSecret: this.options.clientSecret,
             })
                 .then(() => {
                 this.emit('open');
