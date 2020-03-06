@@ -1,5 +1,7 @@
+An isomorphic client library for stream-sea
+
 ### Compatibility
-This library is compatible with stream-sea ^1.1.0 (i.e. 1.1.0 <= stream-sea < 2.0)
+This library is compatible with stream-sea ^2.0 (i.e. 2.0 <= stream-sea < 3.0)
 
 ### For users
 
