@@ -1,6 +1,6 @@
 export interface Remote {
-    appId: string;
-    appSecret: string;
+    clientId: string;
+    clientSecret: string;
     remoteServerHost: string;
     remoteServerPort: string;
     secure: boolean;

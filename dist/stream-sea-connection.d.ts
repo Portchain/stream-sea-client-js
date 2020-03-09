@@ -7,9 +7,9 @@ export interface IStreamSeaConnection extends EventEmitter {
 }
 export interface StreamSeaConnectionOptions {
     url: string;
-    appId: string;
-    appSecret: string;
-    fanout: boolean;
+    clientId: string;
+    clientSecret: string;
+    groupId: string | undefined;
 }
 export declare enum StreamSeaConnectionStatus {
     init = "init",

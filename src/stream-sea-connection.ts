@@ -13,9 +13,9 @@ export interface IStreamSeaConnection extends EventEmitter {
 
 export interface StreamSeaConnectionOptions {
   url: string
-  appId: string
-  appSecret: string
-  fanout: boolean
+  clientId: string
+  clientSecret: string
+  groupId: string | undefined
 }
 
 export enum StreamSeaConnectionStatus {
@@ -90,8 +90,9 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
 
   private onSocketOpen = () => {
     this.sendAndExpectSingleReply('authenticate', {
-      username: this.options.appId,
-      password: this.options.appSecret,
+      type: 'basic',
+      clientId: this.options.clientId,
+      clientSecret: this.options.clientSecret,
     })
       .then(() => {
         this.emit('open')
@@ -197,7 +198,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
         this.sendAndExpectMultiReply(
           'subscribe',
           subscription.streamName,
-          this.options.fanout,
+          this.options.groupId,
           {
             resolve: (m: any) => {
               return
@@ -240,14 +241,14 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   /**
    * Send a message expecting multiple replies
    */
-  private sendAndExpectMultiReply(action: string, payload: any, fanout: boolean, firstReplyCallback: PromiseProxy, otherRepliesCallback: PromiseProxy) {
+  private sendAndExpectMultiReply(action: string, payload: any, groupId: string | undefined, firstReplyCallback: PromiseProxy, otherRepliesCallback: PromiseProxy) {
     const msgId = this.generateNextMessageId()
     this.socket.send(
       JSON.stringify({
         id: msgId,
         action,
         payload,
-        fanout,
+        groupId,
       })
     )
     this.callbacksMap.set(msgId, {

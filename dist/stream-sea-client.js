@@ -6,11 +6,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const stream_sea_connection_1 = require("./stream-sea-connection");
 const utils_1 = require("./utils");
 const logger = __importStar(require("./logger"));
+const uuid_random_1 = __importDefault(require("uuid-random"));
 /**
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
  *
@@ -57,9 +61,9 @@ class StreamSeaClient extends events_1.EventEmitter {
             logger.warn('StreamSeaClient: Reopening connection');
             this.connection = this.options.connectionFactory.createConnection({
                 url: `${utils_1.getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
-                appId: this.options.appId,
-                appSecret: this.options.appSecret,
-                fanout: !!this.options.fanout,
+                clientId: this.options.clientId,
+                clientSecret: this.options.clientSecret,
+                groupId: this.groupId,
             });
             this.attachConnectionEventHandlers();
             this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription));
@@ -69,11 +73,12 @@ class StreamSeaClient extends events_1.EventEmitter {
             this.connection.addSubscription(subscription);
         };
         this.options = options;
+        this.groupId = options.fanout ? uuid_random_1.default() : undefined;
         this.connection = options.connectionFactory.createConnection({
             url: `${utils_1.getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
-            appId: options.appId,
-            appSecret: options.appSecret,
-            fanout: !!options.fanout,
+            clientId: options.clientId,
+            clientSecret: options.clientSecret,
+            groupId: this.groupId,
         });
         this.attachConnectionEventHandlers();
     }

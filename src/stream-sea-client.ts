@@ -3,13 +3,14 @@ import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionF
 import { IStreamSeaSubscription } from './stream-sea-subscription'
 import { getWsURLScheme } from './utils'
 import * as logger from './logger'
+import uuid from 'uuid-random'
 
 interface StreamSeaClientOptions {
   remoteServerHost: string
   remoteServerPort: string
   secure: boolean
-  appId: string
-  appSecret: string
+  clientId: string
+  clientSecret: string
   fanout?: boolean
 }
 
@@ -29,15 +30,17 @@ export class StreamSeaClient extends EventEmitter {
   private RECONNECT_INTERVAL_MS = 3000
   private CONNECTION_FAILURE_ALERT_THRESHOLD = 20 // Log an error after this many consecutive failures
   private consecutiveConnectionFailures = 0
+  private groupId: string | undefined
 
   constructor(options: StreamSeaClientOptions & { connectionFactory: IStreamSeaConnectionFactory }) {
     super()
     this.options = options
+    this.groupId = options.fanout ? uuid() : undefined
     this.connection = options.connectionFactory.createConnection({
       url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
-      appId: options.appId,
-      appSecret: options.appSecret,
-      fanout: !!options.fanout,
+      clientId: options.clientId,
+      clientSecret: options.clientSecret,
+      groupId: this.groupId,
     })
     this.attachConnectionEventHandlers()
   }
@@ -75,9 +78,9 @@ export class StreamSeaClient extends EventEmitter {
     logger.warn('StreamSeaClient: Reopening connection')
     this.connection = this.options.connectionFactory.createConnection({
       url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
-      appId: this.options.appId,
-      appSecret: this.options.appSecret,
-      fanout: !!this.options.fanout,
+      clientId: this.options.clientId,
+      clientSecret: this.options.clientSecret,
+      groupId: this.groupId,
     })
     this.attachConnectionEventHandlers()
     this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription))
