@@ -124,8 +124,11 @@ describe('StreamSeaConnection', () => {
         const socketFactory = new BasicSocketFactory();
         const connection = new stream_sea_connection_1.StreamSeaConnection({
             url: 'test_url',
-            clientId: 'test_client_id',
-            clientSecret: 'test_client_secret',
+            credentialOptions: {
+                type: 'basic',
+                clientId: 'test_client_id',
+                clientSecret: 'test_client_secret',
+            },
             socketFactory,
             groupId: '00000000-0000-0000-000000001234',
         });
