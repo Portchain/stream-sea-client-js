@@ -87,6 +87,9 @@ export class StreamSeaClient extends EventEmitter {
     this.subscriptions.push(subscription)
     this.connection.addSubscription(subscription)
   }
+  public setCredentialOptions = (credentialOptions: CredentialOptions) => {
+    this.options.credentialOptions = credentialOptions
+  }
 }
 
 export const getStreamSeaClient = (options: StreamSeaClientOptions) => new StreamSeaClient({ ...options, connectionFactory: new StreamSeaConnectionFactory({}) })

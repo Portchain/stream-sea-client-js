@@ -37,6 +37,7 @@ export declare class StreamSeaClient extends EventEmitter {
     private onConnectionClose;
     private reopenConnection;
     addSubscription: (subscription: IStreamSeaSubscription) => void;
+    setCredentialOptions: (credentialOptions: CredentialOptions) => void;
 }
 export declare const getStreamSeaClient: (options: StreamSeaClientOptions) => StreamSeaClient;
 export {};

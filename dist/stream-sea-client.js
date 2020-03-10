@@ -71,6 +71,9 @@ class StreamSeaClient extends events_1.EventEmitter {
             this.subscriptions.push(subscription);
             this.connection.addSubscription(subscription);
         };
+        this.setCredentialOptions = (credentialOptions) => {
+            this.options.credentialOptions = credentialOptions;
+        };
         this.options = options;
         this.groupId = options.fanout ? uuid_random_1.default() : undefined;
         this.connection = options.connectionFactory.createConnection({
