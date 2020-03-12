@@ -14,16 +14,25 @@ This library is compatible with stream-sea ^2.1 (i.e. 2.1 <= stream-sea < 3.0)
 - The protocol is initiated by the client establishing a Websocket connection to the server
 - As long as the Websocket connection is open, it is the server's responsibility to send Websocket ping messages
 at least every 30 seconds to avoid idle connections being closed
-- Once a connection is established, the client and server communicate by exchanging *stream-sea wire messages*, also known in this spec as *wire messages* or just *messages*.
-- Every wire message is a JSON object
-- The stream-sea server and stream-sea client can send a stream-sea wire message `m` by serializing it to a string `s = JSON.stringify(m)`
- and then sending a Websocket data message with payload `s`
+- Once a connection is established, the client and server communicate by exchanging Websocket data messages, which will be referred to as just *messages* for the rest of this spec.
+- Every message is a JSON object serialized to a string
 
-### Wire message structure
-- Each wire message has an `id` field of JSON type `number` and a `action` field of JSON type `string`
+### Message structure
+- Each message has an `id` field of JSON type `number` and a `action` field of JSON type `string`. Here is an example message:
+```
+{
+	"id": 2,
+	"action": "subscription",
+	"streamName": "boiler_data",
+	"payload": {
+		"temperature": 92,
+		"pressure": 3002
+	}
+}
+```
 - The client must send the first message with `id` equal to `1`, and must increase `id` by 1 for each subsequent message
-- Each wire message `x` sent by the server is a response to an earlier wire message `y` sent by the client. `x` must have the same values of `id` and `action` as `y`
-- For some wire messages `y` sent by the client, the server can reply with multiple wire messages `x1, x2, ...`. These must all have the same values of `id` and `action` as `y`
+- Each message `x` sent by the server is a response to an earlier message `y` sent by the client. `x` must have the same values of `id` and `action` as `y`
+- For some messages `y` sent by the client, the server can reply with multiple messages `x1, x2, ...`. These must all have the same values of `id` and `action` as `y`
 
 ### Authentication Request Message
 - The client-sent message with `id = 1` must be an Authentication Request message
