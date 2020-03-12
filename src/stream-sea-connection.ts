@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events'
 import { IStreamSeaSubscription } from './stream-sea-subscription'
 import { IStreamSeaSocket, IStreamSeaSocketFactory, StreamSeaSocketFactory } from './stream-sea-socket'
+import { CredentialOptions } from './types'
 
 interface PromiseProxy {
   reject: (err: any) => void
@@ -13,8 +14,7 @@ export interface IStreamSeaConnection extends EventEmitter {
 
 export interface StreamSeaConnectionOptions {
   url: string
-  clientId: string
-  clientSecret: string
+  credentialOptions: CredentialOptions
   groupId: string | undefined
 }
 
@@ -89,11 +89,17 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   }
 
   private onSocketOpen = () => {
-    this.sendAndExpectSingleReply('authenticate', {
+    const authPayload = this.options.credentialOptions.type === 'jwt' ? {
+      type: 'jwt',
+      clientId: this.options.credentialOptions.clientId,
+      jwt: this.options.credentialOptions.jwt,
+    } : {
       type: 'basic',
-      clientId: this.options.clientId,
-      clientSecret: this.options.clientSecret,
-    })
+      clientId: this.options.credentialOptions.clientId,
+      clientSecret: this.options.credentialOptions.clientSecret,
+    }
+    
+    this.sendAndExpectSingleReply('authenticate', authPayload)
       .then(() => {
         this.emit('open')
         this.status = StreamSeaConnectionStatus.open

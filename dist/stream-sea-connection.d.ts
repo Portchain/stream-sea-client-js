@@ -2,13 +2,13 @@
 import { EventEmitter } from 'events';
 import { IStreamSeaSubscription } from './stream-sea-subscription';
 import { IStreamSeaSocketFactory } from './stream-sea-socket';
+import { CredentialOptions } from './types';
 export interface IStreamSeaConnection extends EventEmitter {
     addSubscription: (subscription: IStreamSeaSubscription) => void;
 }
 export interface StreamSeaConnectionOptions {
     url: string;
-    clientId: string;
-    clientSecret: string;
+    credentialOptions: CredentialOptions;
     groupId: string | undefined;
 }
 export declare enum StreamSeaConnectionStatus {

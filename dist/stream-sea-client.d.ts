@@ -2,14 +2,14 @@
 import { EventEmitter } from 'events';
 import { IStreamSeaConnectionFactory } from './stream-sea-connection';
 import { IStreamSeaSubscription } from './stream-sea-subscription';
-interface StreamSeaClientOptions {
+import { CredentialOptions } from './types';
+declare type StreamSeaClientOptions = {
     remoteServerHost: string;
     remoteServerPort: string;
     secure: boolean;
-    clientId: string;
-    clientSecret: string;
+    credentialOptions: CredentialOptions;
     fanout?: boolean;
-}
+};
 /**
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
  *
@@ -37,6 +37,7 @@ export declare class StreamSeaClient extends EventEmitter {
     private onConnectionClose;
     private reopenConnection;
     addSubscription: (subscription: IStreamSeaSubscription) => void;
+    setCredentialOptions: (credentialOptions: CredentialOptions) => void;
 }
 export declare const getStreamSeaClient: (options: StreamSeaClientOptions) => StreamSeaClient;
 export {};

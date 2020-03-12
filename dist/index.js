@@ -8,8 +8,30 @@ const request_promise_native_1 = __importDefault(require("request-promise-native
 const stream_sea_client_1 = require("./stream-sea-client");
 const stream_sea_subscription_1 = require("./stream-sea-subscription");
 const utils_1 = require("./utils");
+// Subscribe with basic credentials
 exports.subscribe = async (args) => {
-    const client = stream_sea_client_1.getStreamSeaClient(args);
+    const client = stream_sea_client_1.getStreamSeaClient({
+        ...args,
+        credentialOptions: {
+            type: 'basic',
+            clientId: args.clientId,
+            clientSecret: args.clientSecret,
+        }
+    });
+    const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
+    client.addSubscription(subscription);
+    return subscription;
+};
+// Subscribe with JWT credentials
+exports.subscribeWithJwt = async (args) => {
+    const client = stream_sea_client_1.getStreamSeaClient({
+        ...args,
+        credentialOptions: {
+            type: 'jwt',
+            clientId: args.clientId,
+            jwt: args.jwt,
+        },
+    });
     const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
     client.addSubscription(subscription);
     return subscription;

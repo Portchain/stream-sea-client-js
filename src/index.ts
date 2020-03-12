@@ -5,14 +5,37 @@ import { getStreamSeaClient } from './stream-sea-client'
 import { StreamSeaSubscription } from './stream-sea-subscription'
 import { getHttpURLScheme } from './utils'
 
-export const subscribe = async (args: Remote & Stream & {fanout?: boolean}) => {
-  const client = getStreamSeaClient(args)
+// Subscribe with basic credentials
+export const subscribe = async (args: Remote & Stream & {clientSecret: string, fanout?: boolean}) => {
+  const client = getStreamSeaClient({
+    ...args,
+    credentialOptions: {
+      type: 'basic',
+      clientId: args.clientId,
+      clientSecret: args.clientSecret,
+    }
+  })
   const subscription = new StreamSeaSubscription(args.stream)
   client.addSubscription(subscription)
   return subscription
 }
 
-export const publish = async (args: Remote & Stream & { payload: any }) => {
+// Subscribe with JWT credentials
+export const subscribeWithJwt = async (args: Remote & Stream & {jwt: string, fanout?: boolean}) => {
+  const client = getStreamSeaClient({
+    ...args,
+    credentialOptions: {
+      type: 'jwt',
+      clientId: args.clientId,
+      jwt: args.jwt,
+    },
+  })
+  const subscription = new StreamSeaSubscription(args.stream)
+  client.addSubscription(subscription)
+  return subscription
+}
+
+export const publish = async (args: Remote & Stream & { clientSecret: string, payload: any }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/publish`,
     headers: {
@@ -26,7 +49,7 @@ export const publish = async (args: Remote & Stream & { payload: any }) => {
   })
 }
 
-export const defineStream = async (args: Remote & Stream & SchemaDefinition) => {
+export const defineStream = async (args: Remote & Stream & {clientSecret: string} & SchemaDefinition) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/define`,
     headers: {
@@ -40,7 +63,7 @@ export const defineStream = async (args: Remote & Stream & SchemaDefinition) => 
   })
 }
 
-export const describeStream = async (args: Remote & Stream & SchemaDefinition) => {
+export const describeStream = async (args: Remote & Stream & {clientSecret: string} & SchemaDefinition) => {
   const a = {
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
     headers: {
@@ -54,7 +77,7 @@ export const describeStream = async (args: Remote & Stream & SchemaDefinition) =
   return await request(a)
 }
 
-export const createClient = async (args: Remote & { description: string }) => {
+export const createClient = async (args: Remote & { clientSecret: string, description: string }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
     headers: {
@@ -68,7 +91,7 @@ export const createClient = async (args: Remote & { description: string }) => {
   })
 }
 
-export const deleteClient = async (args: Remote & { clientId: string }) => {
+export const deleteClient = async (args: Remote & { clientSecret: string, clientId: string }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {
@@ -81,7 +104,7 @@ export const deleteClient = async (args: Remote & { clientId: string }) => {
   })
 }
 
-export const rotateClientSecret = async (args: Remote & { clientId: string }) => {
+export const rotateClientSecret = async (args: Remote & { clientSecret: string, clientId: string }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
     headers: {

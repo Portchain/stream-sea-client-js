@@ -3,14 +3,14 @@ import { IStreamSeaConnectionFactory, IStreamSeaConnection, StreamSeaConnectionF
 import { IStreamSeaSubscription } from './stream-sea-subscription'
 import { getWsURLScheme } from './utils'
 import * as logger from './logger'
+import { CredentialOptions } from './types'
 import uuid from 'uuid-random'
 
-interface StreamSeaClientOptions {
+type StreamSeaClientOptions = {
   remoteServerHost: string
   remoteServerPort: string
   secure: boolean
-  clientId: string
-  clientSecret: string
+  credentialOptions: CredentialOptions
   fanout?: boolean
 }
 
@@ -38,8 +38,7 @@ export class StreamSeaClient extends EventEmitter {
     this.groupId = options.fanout ? uuid() : undefined
     this.connection = options.connectionFactory.createConnection({
       url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
-      clientId: options.clientId,
-      clientSecret: options.clientSecret,
+      credentialOptions: options.credentialOptions,
       groupId: this.groupId,
     })
     this.attachConnectionEventHandlers()
@@ -78,8 +77,7 @@ export class StreamSeaClient extends EventEmitter {
     logger.warn('StreamSeaClient: Reopening connection')
     this.connection = this.options.connectionFactory.createConnection({
       url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
-      clientId: this.options.clientId,
-      clientSecret: this.options.clientSecret,
+      credentialOptions: this.options.credentialOptions,
       groupId: this.groupId,
     })
     this.attachConnectionEventHandlers()
@@ -88,6 +86,9 @@ export class StreamSeaClient extends EventEmitter {
   public addSubscription = (subscription: IStreamSeaSubscription) => {
     this.subscriptions.push(subscription)
     this.connection.addSubscription(subscription)
+  }
+  public setCredentialOptions = (credentialOptions: CredentialOptions) => {
+    this.options.credentialOptions = credentialOptions
   }
 }
 

@@ -61,8 +61,7 @@ class StreamSeaClient extends events_1.EventEmitter {
             logger.warn('StreamSeaClient: Reopening connection');
             this.connection = this.options.connectionFactory.createConnection({
                 url: `${utils_1.getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
-                clientId: this.options.clientId,
-                clientSecret: this.options.clientSecret,
+                credentialOptions: this.options.credentialOptions,
                 groupId: this.groupId,
             });
             this.attachConnectionEventHandlers();
@@ -72,12 +71,14 @@ class StreamSeaClient extends events_1.EventEmitter {
             this.subscriptions.push(subscription);
             this.connection.addSubscription(subscription);
         };
+        this.setCredentialOptions = (credentialOptions) => {
+            this.options.credentialOptions = credentialOptions;
+        };
         this.options = options;
         this.groupId = options.fanout ? uuid_random_1.default() : undefined;
         this.connection = options.connectionFactory.createConnection({
             url: `${utils_1.getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
-            clientId: options.clientId,
-            clientSecret: options.clientSecret,
+            credentialOptions: options.credentialOptions,
             groupId: this.groupId,
         });
         this.attachConnectionEventHandlers();
