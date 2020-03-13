@@ -30,3 +30,9 @@ export declare const rotateClientSecret: (args: Remote & {
     clientSecret: string;
     clientId: string;
 }) => Promise<any>;
+export declare const rotateClientJwtPublicKey: (args: Remote & {
+    clientSecret: string;
+    clientId: string;
+} & {
+    jwtPublicKey: string | null;
+}) => Promise<any>;
