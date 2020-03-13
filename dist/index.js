@@ -112,3 +112,16 @@ exports.rotateClientSecret = async (args) => {
         json: true,
     });
 };
+exports.rotateClientJwtPublicKey = async (args) => {
+    return await request_promise_native_1.default({
+        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
+        headers: {
+            'content-type': 'application/json',
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+        },
+        method: 'PUT',
+        gzip: true,
+        json: true,
+        body: { jwtPublicKey: args.jwtPublicKey },
+    });
+};

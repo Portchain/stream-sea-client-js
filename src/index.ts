@@ -116,3 +116,17 @@ export const rotateClientSecret = async (args: Remote & { clientSecret: string, 
     json: true,
   })
 }
+
+export const rotateClientJwtPublicKey = async (args: Remote & { clientSecret: string, clientId: string } & {jwtPublicKey: string | null}) => {
+  return await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'PUT',
+    gzip: true,
+    json: true,
+    body: { jwtPublicKey: args.jwtPublicKey },
+  })
+}
