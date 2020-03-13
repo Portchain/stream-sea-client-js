@@ -114,7 +114,7 @@ exports.rotateClientSecret = async (args) => {
 };
 exports.rotateClientJwtPublicKey = async (args) => {
     return await request_promise_native_1.default({
-        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
+        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}/jwt-public-key`,
         headers: {
             'content-type': 'application/json',
             authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
