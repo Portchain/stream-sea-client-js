@@ -125,3 +125,16 @@ exports.rotateClientJwtPublicKey = async (args) => {
         body: { jwtPublicKey: args.jwtPublicKey },
     });
 };
+exports.getSchemaVersionsVector = async (args) => {
+    return (await request_promise_native_1.default({
+        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/schema-versions-vector`,
+        headers: {
+            'content-type': 'application/json',
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+        },
+        method: 'POST',
+        gzip: true,
+        json: true,
+        body: { schemaNames: args.schemaNames },
+    })).versionsVector;
+};

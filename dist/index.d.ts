@@ -36,3 +36,9 @@ export declare const rotateClientJwtPublicKey: (args: Remote & {
 } & {
     jwtPublicKey: string | null;
 }) => Promise<any>;
+export declare const getSchemaVersionsVector: (args: Remote & {
+    clientSecret: string;
+    clientId: string;
+} & {
+    schemaNames: string[];
+}) => Promise<any>;
