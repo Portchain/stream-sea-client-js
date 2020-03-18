@@ -49,7 +49,7 @@ at least every 30 seconds to avoid idle connections being closed
   - A `clientId` field of JSON type `string`
   - A `jwt` field of JSON type `string` containing the stream-sea JWT that is:
 	  - signed using the client JWT public key with the RS512 algorithm
-		- serialized to a string using RFC 7515 JWS Compact Serialization
+    - serialized to a string using RFC 7515 JWS Compact Serialization
 - The server must respond to an Authentication Request message with exactly one Authentication Response message
 
 ### Stream-sea JWT
