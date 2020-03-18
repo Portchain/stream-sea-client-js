@@ -130,3 +130,17 @@ export const rotateClientJwtPublicKey = async (args: Remote & { clientSecret: st
     body: { jwtPublicKey: args.jwtPublicKey },
   })
 }
+
+export const getSchemaVersionsVector = async (args: Remote & { clientSecret: string, clientId: string } & {schemaNames: string[]}) => {
+  return (await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/schema-versions-vector`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'POST',
+    gzip: true,
+    json: true,
+    body: { schemaNames: args.schemaNames },
+  })).versionsVector
+}
