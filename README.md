@@ -1,7 +1,7 @@
 An isomorphic client library for stream-sea
 
 # Compatibility
-This library is compatible with stream-sea ^2.3 (i.e. 2.3 <= stream-sea < 3.0)
+This library is compatible with stream-sea ^4.0 (i.e. 4.0 <= stream-sea < 5.0)
 
 # For users
 
@@ -47,7 +47,9 @@ at least every 30 seconds to avoid idle connections being closed
 - In order to authenticate with the Basic method, the `payload` of the Authentication Request message must have the following fields:
   - A `type` field with value `"jwt"`
   - A `clientId` field of JSON type `string`
-  - A `jwt` field of JSON type `string` containing the stream-sea JWT that is signed and serialized using the client JWT secret and RFC 7515 JWS Compact Serialization
+  - A `jwt` field of JSON type `string` containing the stream-sea JWT that is:
+	  - signed using the client JWT public key with the RS512 algorithm
+		- serialized to a string using RFC 7515 JWS Compact Serialization
 - The server must respond to an Authentication Request message with exactly one Authentication Response message
 
 ### Stream-sea JWT
