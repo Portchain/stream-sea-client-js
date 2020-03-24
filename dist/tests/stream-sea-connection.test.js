@@ -65,6 +65,7 @@ class BasicSocket extends events_1.EventEmitter {
             assert.ok(fn);
             setTimeout(() => fn(JSON.parse(m)));
         };
+        this.close = () => undefined;
         setTimeout(() => this.emit('open'));
     }
     emitSubscriptionMessage() {

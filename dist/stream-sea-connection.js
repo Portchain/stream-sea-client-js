@@ -129,6 +129,9 @@ class StreamSeaConnection extends events_1.EventEmitter {
             this.subscriptionsQueue.push(subscription);
             this.checkSubscriptionsQueue();
         };
+        this.close = () => {
+            this.socket.close();
+        };
         this.options = options;
         this.socket = this.options.socketFactory.createSocket({ url: options.url }); // TODO: use factory method
         this.socket.on('open', this.onSocketOpen);

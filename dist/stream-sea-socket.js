@@ -35,6 +35,9 @@ class StreamSeaSocket extends events_1.EventEmitter {
             // console.log('StreamSeaSocket.send', JSON.stringify(message, null, 4))
             this.ws.send(message);
         };
+        this.close = () => {
+            this.ws.close();
+        };
         this.options = options;
         this.ws = new WebSocket(this.options.url);
         this.ws.onopen = this.onWsOpen;

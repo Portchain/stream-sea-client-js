@@ -2,6 +2,7 @@
 import { EventEmitter } from 'events';
 export interface IStreamSeaSocket extends EventEmitter {
     send: (m: any) => void;
+    close: () => void;
 }
 interface StreamSeaSocketOptions {
     url: string;
@@ -27,6 +28,7 @@ export declare class StreamSeaSocket extends EventEmitter implements IStreamSeaS
     private onWsClose;
     private onWsError;
     send: (message: string) => void;
+    close: () => void;
 }
 export interface IStreamSeaSocketFactory {
     createSocket: (options: StreamSeaSocketOptions) => IStreamSeaSocket;

@@ -5,6 +5,7 @@ import { StreamSeaSubscription } from '../stream-sea-subscription'
 
 class GoodConnection extends EventEmitter implements IStreamSeaConnection {
   public addSubscription: (subscription: StreamSeaSubscription) => void
+  public close = () => undefined
   constructor(addSubscription: (subscription: StreamSeaSubscription) => void) {
     super()
     this.addSubscription = addSubscription
@@ -13,6 +14,7 @@ class GoodConnection extends EventEmitter implements IStreamSeaConnection {
 
 class UnconnectableConnection extends EventEmitter implements IStreamSeaConnection {
   public addSubscription: (subscription: StreamSeaSubscription) => void
+  public close = () => undefined
   constructor(addSubscription: (subscription: StreamSeaSubscription) => void) {
     super()
     this.addSubscription = addSubscription

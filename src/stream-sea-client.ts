@@ -31,6 +31,7 @@ export class StreamSeaClient extends EventEmitter {
   private CONNECTION_FAILURE_ALERT_THRESHOLD = 20 // Log an error after this many consecutive failures
   private consecutiveConnectionFailures = 0
   private groupId: string | undefined
+  private isDestroyed: boolean = false
 
   constructor(options: StreamSeaClientOptions & { connectionFactory: IStreamSeaConnectionFactory }) {
     super()
@@ -63,6 +64,10 @@ export class StreamSeaClient extends EventEmitter {
   }
 
   private onConnectionClose = () => {
+    if (this.isDestroyed){
+      // Do nothing if the client is destroyed
+      return
+    }
     this.consecutiveConnectionFailures++
     const errorMessage = `StreamSeaClient: Connection closed for the ${this.consecutiveConnectionFailures} time consecutively`
     if (this.consecutiveConnectionFailures === this.CONNECTION_FAILURE_ALERT_THRESHOLD) {
@@ -89,6 +94,10 @@ export class StreamSeaClient extends EventEmitter {
   }
   public setCredentialOptions = (credentialOptions: CredentialOptions) => {
     this.options.credentialOptions = credentialOptions
+  }
+  public destroy = () => {
+    this.isDestroyed = true
+    this.connection.close()
   }
 }
 

@@ -31,6 +31,7 @@ class StreamSeaClient extends events_1.EventEmitter {
         this.RECONNECT_INTERVAL_MS = 3000;
         this.CONNECTION_FAILURE_ALERT_THRESHOLD = 20; // Log an error after this many consecutive failures
         this.consecutiveConnectionFailures = 0;
+        this.isDestroyed = false;
         this.attachConnectionEventHandlers = () => {
             this.connection.on('open', this.onConnectionOpen);
             this.connection.on('close', this.onConnectionClose);
@@ -47,6 +48,10 @@ class StreamSeaClient extends events_1.EventEmitter {
             logger.warn(w);
         };
         this.onConnectionClose = () => {
+            if (this.isDestroyed) {
+                // Do nothing if the client is destroyed
+                return;
+            }
             this.consecutiveConnectionFailures++;
             const errorMessage = `StreamSeaClient: Connection closed for the ${this.consecutiveConnectionFailures} time consecutively`;
             if (this.consecutiveConnectionFailures === this.CONNECTION_FAILURE_ALERT_THRESHOLD) {
@@ -73,6 +78,10 @@ class StreamSeaClient extends events_1.EventEmitter {
         };
         this.setCredentialOptions = (credentialOptions) => {
             this.options.credentialOptions = credentialOptions;
+        };
+        this.destroy = () => {
+            this.isDestroyed = true;
+            this.connection.close();
         };
         this.options = options;
         this.groupId = options.fanout ? uuid_random_1.default() : undefined;
