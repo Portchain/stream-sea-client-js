@@ -63,7 +63,7 @@ export const defineStream = async (args: Remote & Stream & { clientSecret: strin
   })
 }
 
-export const describeStream = async (args: Remote & Stream & { clientSecret: string } & SchemaDefinition) => {
+export const describeStream = async (args: Remote & Stream & { clientSecret: string }) => {
   const a = {
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/streams/${args.stream}/schema`,
     headers: {
@@ -77,61 +77,7 @@ export const describeStream = async (args: Remote & Stream & { clientSecret: str
   return await request(a)
 }
 
-export const createClient = async (args: Remote & { clientSecret: string; description: string }) => {
-  return await request({
-    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
-    headers: {
-      'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
-    },
-    method: 'POST',
-    gzip: true,
-    json: true,
-    body: { description: args.description },
-  })
-}
-
-export const deleteClient = async (args: Remote & { clientSecret: string; clientId: string }) => {
-  return await request({
-    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
-    headers: {
-      'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
-    },
-    method: 'DELETE',
-    gzip: true,
-    json: true,
-  })
-}
-
-export const rotateClientSecret = async (args: Remote & { clientSecret: string; clientId: string }) => {
-  return await request({
-    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
-    headers: {
-      'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
-    },
-    method: 'PUT',
-    gzip: true,
-    json: true,
-  })
-}
-
-export const rotateClientJwtPublicKey = async (args: Remote & { clientSecret: string; clientId: string } & { jwtPublicKey: string | null }) => {
-  return await request({
-    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}/jwt-public-key`,
-    headers: {
-      'content-type': 'application/json',
-      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
-    },
-    method: 'PUT',
-    gzip: true,
-    json: true,
-    body: { jwtPublicKey: args.jwtPublicKey },
-  })
-}
-
-export const getSchemaVersionsVector = async (args: Remote & { clientSecret: string; clientId: string } & { schemaNames: string[] }) => {
+export const getSchemaVersionsVector = async (args: Remote & { clientSecret: string; schemaNames: string[] }) => {
   return (
     await request({
       url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/schema-versions-vector`,
@@ -145,4 +91,58 @@ export const getSchemaVersionsVector = async (args: Remote & { clientSecret: str
       body: { schemaNames: args.schemaNames },
     })
   ).versionsVector
+}
+
+export const createClient = async (args: Remote & { clientSecret: string; targetClientId: string; targetClientDescription: string }) => {
+  return await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'POST',
+    gzip: true,
+    json: true,
+    body: { clientId: args.targetClientId, description: args.targetClientDescription },
+  })
+}
+
+export const deleteClient = async (args: Remote & { clientSecret: string; targetClientId: string }) => {
+  return await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.targetClientId}`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'DELETE',
+    gzip: true,
+    json: true,
+  })
+}
+
+export const rotateClientSecret = async (args: Remote & { clientSecret: string }) => {
+  return await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'PUT',
+    gzip: true,
+    json: true,
+  })
+}
+
+export const rotateClientJwtPublicKey = async (args: Remote & { clientSecret: string; jwtPublicKey: string | null }) => {
+  return await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}/jwt-public-key`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'PUT',
+    gzip: true,
+    json: true,
+    body: { jwtPublicKey: args.jwtPublicKey },
+  })
 }
