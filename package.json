@@ -6,13 +6,27 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest --runInBand --forceExit --detectOpenHandles --verbose false"
+    "test": "jest --runInBand --forceExit --detectOpenHandles --verbose false",
+    "lintall": "prettier --write 'src/**/*.ts'"
   },
   "author": "",
   "license": "Proprietary - Portchain ApS",
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run build && git add dist"
+    }
+  },
   "devDependencies": {
     "@types/jest": "24.9.1",
+    "husky": "4.2.3",
     "jest": "25.1.0",
+    "lint-staged": "9.5.0",
     "prettier": "1.19.1",
     "ts-jest": "25.0.0",
     "typescript": "3.7.4"

@@ -78,7 +78,7 @@ class BasicSocket extends events_1.EventEmitter {
                 payload: {
                     foo: 'bar',
                 },
-            })
+            }),
         });
     }
 }

@@ -31,15 +31,17 @@ class StreamSeaConnection extends events_1.EventEmitter {
         this.subscriptionsQueue = [];
         this.callbacksMap = new Map();
         this.onSocketOpen = () => {
-            const authPayload = this.options.credentialOptions.type === 'jwt' ? {
-                type: 'jwt',
-                clientId: this.options.credentialOptions.clientId,
-                jwt: this.options.credentialOptions.jwt,
-            } : {
-                type: 'basic',
-                clientId: this.options.credentialOptions.clientId,
-                clientSecret: this.options.credentialOptions.clientSecret,
-            };
+            const authPayload = this.options.credentialOptions.type === 'jwt'
+                ? {
+                    type: 'jwt',
+                    clientId: this.options.credentialOptions.clientId,
+                    jwt: this.options.credentialOptions.jwt,
+                }
+                : {
+                    type: 'basic',
+                    clientId: this.options.credentialOptions.clientId,
+                    clientSecret: this.options.credentialOptions.clientSecret,
+                };
             this.sendAndExpectSingleReply('authenticate', authPayload)
                 .then(() => {
                 this.emit('open');

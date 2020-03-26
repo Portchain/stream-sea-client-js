@@ -20,7 +20,6 @@ export declare const describeStream: (args: Remote & Stream & {
 }) => Promise<any>;
 export declare const getSchemaVersionsVector: (args: Remote & {
     clientSecret: string;
-} & {
     schemaNames: string[];
 }) => Promise<any>;
 export declare const createClient: (args: Remote & {
@@ -37,6 +36,5 @@ export declare const rotateClientSecret: (args: Remote & {
 }) => Promise<any>;
 export declare const rotateClientJwtPublicKey: (args: Remote & {
     clientSecret: string;
-} & {
     jwtPublicKey: string | null;
 }) => Promise<any>;

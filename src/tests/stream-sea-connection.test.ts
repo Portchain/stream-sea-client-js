@@ -16,50 +16,41 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
     m => {
       expect(m.action).toBe('authenticate')
       if (this.verifyAuthenticationPayload(m.payload)) {
-        this.emit(
-          'message',
-          {
-            data: JSON.stringify({
-              id: m.id,
-              action: 'authenticate',
-              success: true,
-              payload: {
-                jailId: 'some_jail',
-              },
-            }),
-          }
-        )
+        this.emit('message', {
+          data: JSON.stringify({
+            id: m.id,
+            action: 'authenticate',
+            success: true,
+            payload: {
+              jailId: 'some_jail',
+            },
+          }),
+        })
       } else {
-        this.emit(
-          'message',
-          {
-            data: JSON.stringify({
-              id: m.id,
-              action: 'authenticate',
-              success: false,
-              error: {
-                message: 'Invalid credentials',
-              },
-            }),
-          }
-        )
+        this.emit('message', {
+          data: JSON.stringify({
+            id: m.id,
+            action: 'authenticate',
+            success: false,
+            error: {
+              message: 'Invalid credentials',
+            },
+          }),
+        })
       }
     },
     m => {
       expect(m.action).toBe('subscribe')
       this.subscriptionKey = m.id
       this.groupId = m.groupId
-      this.emit(
-        'message',
-        {
-          data: JSON.stringify({
-            id: m.id,
-            action: 'subscription',
-            success: true,
-            payload: m.id,
-          }),
-        }
-      )
+      this.emit('message', {
+        data: JSON.stringify({
+          id: m.id,
+          action: 'subscription',
+          success: true,
+          payload: m.id,
+        }),
+      })
     },
   ]
   constructor() {
@@ -74,19 +65,16 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
   public close = () => undefined
   public emitSubscriptionMessage() {
     assert.ok(this.subscriptionKey)
-    this.emit(
-      'message',
-      {
-        data: JSON.stringify({
-          id: this.subscriptionKey,
-          action: 'subscription',
-          streamName: 'testStream',
-          payload: {
-            foo: 'bar',
-          },
-        })
-      }
-    )
+    this.emit('message', {
+      data: JSON.stringify({
+        id: this.subscriptionKey,
+        action: 'subscription',
+        streamName: 'testStream',
+        payload: {
+          foo: 'bar',
+        },
+      }),
+    })
   }
 }
 

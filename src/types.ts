@@ -47,6 +47,6 @@ export interface SchemaDefinition extends Schema {
   version: number
 }
 
-export type BasicCredentialOptions = {type: 'basic', clientId: string, clientSecret: string}
-export type JwtCredentialOptions = {type: 'jwt', clientId: string, jwt: string}
+export type BasicCredentialOptions = { type: 'basic'; clientId: string; clientSecret: string }
+export type JwtCredentialOptions = { type: 'jwt'; clientId: string; jwt: string }
 export type CredentialOptions = BasicCredentialOptions | JwtCredentialOptions

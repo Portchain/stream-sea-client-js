@@ -64,7 +64,7 @@ export class StreamSeaClient extends EventEmitter {
   }
 
   private onConnectionClose = () => {
-    if (this.isDestroyed){
+    if (this.isDestroyed) {
       // Do nothing if the client is destroyed
       return
     }
