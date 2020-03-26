@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest --runInBand --forceExit --detectOpenHandles --verbose false"
+    "test": "jest --runInBand --forceExit --detectOpenHandles --verbose false",
+    "lintall": "prettier --write 'src/**/*.ts'"
   },
   "author": "",
   "license": "Proprietary - Portchain ApS",
