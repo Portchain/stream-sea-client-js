@@ -3,6 +3,7 @@ import { EventEmitter } from 'events'
 
 export interface IStreamSeaSocket extends EventEmitter {
   send: (m: any) => void
+  close: () => void
 }
 
 interface StreamSeaSocketOptions {
@@ -16,6 +17,7 @@ interface IsomorphicWebsocket {
   onerror: null | ((e: any) => void)
   ping?: (callback: () => void) => void
   send: (message: string) => void
+  close: () => void
 }
 
 /**
@@ -64,6 +66,10 @@ export class StreamSeaSocket extends EventEmitter implements IStreamSeaSocket {
   public send = (message: string) => {
     // console.log('StreamSeaSocket.send', JSON.stringify(message, null, 4))
     this.ws.send(message)
+  }
+
+  public close = () => {
+    this.ws.close()
   }
 }
 

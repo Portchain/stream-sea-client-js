@@ -5,6 +5,7 @@ import { IStreamSeaSocketFactory } from './stream-sea-socket';
 import { CredentialOptions } from './types';
 export interface IStreamSeaConnection extends EventEmitter {
     addSubscription: (subscription: IStreamSeaSubscription) => void;
+    close: () => void;
 }
 export interface StreamSeaConnectionOptions {
     url: string;
@@ -59,7 +60,6 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
     private onSocketClose;
     private onSocketError;
     private generateNextMessageId;
-    addSubscription: (subscription: IStreamSeaSubscription) => void;
     /**
      * Send out queued subscriptions if possible
      */
@@ -72,6 +72,8 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
      * Send a message expecting multiple replies
      */
     private sendAndExpectMultiReply;
+    addSubscription: (subscription: IStreamSeaSubscription) => void;
+    close: () => void;
 }
 export interface IStreamSeaConnectionFactory {
     createConnection: (options: StreamSeaConnectionOptions) => IStreamSeaConnection;

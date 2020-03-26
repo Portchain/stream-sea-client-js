@@ -10,6 +10,7 @@ interface PromiseProxy {
 
 export interface IStreamSeaConnection extends EventEmitter {
   addSubscription: (subscription: IStreamSeaSubscription) => void
+  close: () => void
 }
 
 export interface StreamSeaConnectionOptions {
@@ -189,12 +190,6 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
     return ++this.msgCnt
   }
 
-  public addSubscription = (subscription: IStreamSeaSubscription) => {
-    // console.log('StreamSeaConnection.addSubscription')
-    this.subscriptionsQueue.push(subscription)
-    this.checkSubscriptionsQueue()
-  }
-
   /**
    * Send out queued subscriptions if possible
    */
@@ -263,6 +258,16 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
       otherRepliesCallback,
       receivedReply: false,
     })
+  }
+
+  public addSubscription = (subscription: IStreamSeaSubscription) => {
+    // console.log('StreamSeaConnection.addSubscription')
+    this.subscriptionsQueue.push(subscription)
+    this.checkSubscriptionsQueue()
+  }
+
+  public close = () => {
+    this.socket.close()
   }
 }
 

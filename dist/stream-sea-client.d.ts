@@ -27,6 +27,7 @@ export declare class StreamSeaClient extends EventEmitter {
     private CONNECTION_FAILURE_ALERT_THRESHOLD;
     private consecutiveConnectionFailures;
     private groupId;
+    private isDestroyed;
     constructor(options: StreamSeaClientOptions & {
         connectionFactory: IStreamSeaConnectionFactory;
     });
@@ -38,6 +39,7 @@ export declare class StreamSeaClient extends EventEmitter {
     private reopenConnection;
     addSubscription: (subscription: IStreamSeaSubscription) => void;
     setCredentialOptions: (credentialOptions: CredentialOptions) => void;
+    destroy: () => void;
 }
 export declare const getStreamSeaClient: (options: StreamSeaClientOptions) => StreamSeaClient;
 export {};

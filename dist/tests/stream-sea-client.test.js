@@ -6,12 +6,14 @@ const stream_sea_subscription_1 = require("../stream-sea-subscription");
 class GoodConnection extends events_1.EventEmitter {
     constructor(addSubscription) {
         super();
+        this.close = () => undefined;
         this.addSubscription = addSubscription;
     }
 }
 class UnconnectableConnection extends events_1.EventEmitter {
     constructor(addSubscription) {
         super();
+        this.close = () => undefined;
         this.addSubscription = addSubscription;
         setTimeout(() => {
             this.emit('warning', 'Could not connect');

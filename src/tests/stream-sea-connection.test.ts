@@ -71,6 +71,7 @@ class BasicSocket extends EventEmitter implements IStreamSeaSocket {
     assert.ok(fn)
     setTimeout(() => fn!(JSON.parse(m)))
   }
+  public close = () => undefined
   public emitSubscriptionMessage() {
     assert.ok(this.subscriptionKey)
     this.emit(
