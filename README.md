@@ -167,7 +167,7 @@ FdslLiteralMetaExpr evalutes to the metadata field named `e`. Currently the only
 
 #### FDSL operator nodes
 
-#### FdslEqExpr
+##### FdslEqExpr
 ```
 {
   t: 'eq',
@@ -176,7 +176,7 @@ FdslLiteralMetaExpr evalutes to the metadata field named `e`. Currently the only
 ```
 FdslEqExpr evalutes to true if the subexpressions `e[0]` and `e[1]` evaluate to the same value, and false otherwise.
 
-#### FdslAndExpr
+##### FdslAndExpr
 ```
 {
   t: 'and',
@@ -185,7 +185,7 @@ FdslEqExpr evalutes to true if the subexpressions `e[0]` and `e[1]` evaluate to 
 ```
 FdslAndExpr evalutes to true if the subexpressions in `e` all evaluate to truthy values, and false otherwise.
 
-#### FdslOrExpr
+##### FdslOrExpr
 ```
 {
   t: 'or',
@@ -194,7 +194,7 @@ FdslAndExpr evalutes to true if the subexpressions in `e` all evaluate to truthy
 ```
 FdslOrExpr evalutes to true if any of the subexpressions in `e` evaluate to a truthy value, and false otherwise.
 
-#### FdslNotExpr
+##### FdslNotExpr
 ```
 {
   t: 'or',
