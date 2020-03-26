@@ -90,16 +90,19 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
   }
 
   private onSocketOpen = () => {
-    const authPayload = this.options.credentialOptions.type === 'jwt' ? {
-      type: 'jwt',
-      clientId: this.options.credentialOptions.clientId,
-      jwt: this.options.credentialOptions.jwt,
-    } : {
-      type: 'basic',
-      clientId: this.options.credentialOptions.clientId,
-      clientSecret: this.options.credentialOptions.clientSecret,
-    }
-    
+    const authPayload =
+      this.options.credentialOptions.type === 'jwt'
+        ? {
+            type: 'jwt',
+            clientId: this.options.credentialOptions.clientId,
+            jwt: this.options.credentialOptions.jwt,
+          }
+        : {
+            type: 'basic',
+            clientId: this.options.credentialOptions.clientId,
+            clientSecret: this.options.credentialOptions.clientSecret,
+          }
+
     this.sendAndExpectSingleReply('authenticate', authPayload)
       .then(() => {
         this.emit('open')

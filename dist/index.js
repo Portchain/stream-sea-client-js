@@ -16,7 +16,7 @@ exports.subscribe = async (args) => {
             type: 'basic',
             clientId: args.clientId,
             clientSecret: args.clientSecret,
-        }
+        },
     });
     const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
     client.addSubscription(subscription);
