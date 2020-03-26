@@ -57,35 +57,47 @@ Write a schema definition for a stream
 If a schema definition with the same name and version number already exists, the existing definition will not be overwritten.
 The returned promise will resolve if the new definition is the same as the existing definition, and reject otherwise.
 
-#### getSchemaVersionsVector
+#### getSchemaVersionsVector(args: Remote & { clientSecret: string, schemaNames: string[]})
 Read the version numbers for multiple streams
 - `clientSecret: string` - The client secret used to authenticate the client
 - `schemaNames: string[]` - The names of the streams
 This function will return an array `retVal` with the same length as `schemaNames`. For every `i`, if the stream with name `schemaNames[i]` exists, then the value of `retVal[i]` will be that stream's version number. If the stream with name `schemaNames[i]` does not exist, then the value of `retVal[i]` will be `null`.
 
-#### createClient
+#### createClient(args: Remote & { clientSecret: string, targetClientId: string, targetClientDescription: string })
 Create another client in the same jail
 - `clientSecret: string` - The client secret used to authenticate the current client
 - `targetClientId: string` - The client ID of the new client
 - `targetClientDescription: string` - The description of the new client
 The client secret will be generated on the server and returned in the `secret` field of the result.
 
-#### deleteClient
+#### deleteClient(args: Remote & { clientSecret: string, targetClientId: string })
 Delete another client in the same jail
 - `clientSecret: string` - The client secret used to authenticate the current client
 - `targetClientId: string` - The client ID of the client to delete
 
-#### rotateClientSecret
+#### rotateClientSecret(args: Remote & { clientSecret: string })
 Rotate the client secret for this client
 - `clientSecret: string` - The client secret used to authenticate the current client
 The new client secret will be generated on the server and returned in the `secret` field of the result.
 
-#### rotateClientJwtPublicKey
+#### rotateClientJwtPublicKey(args: Remote & { clientSecret: string, jwtPublicKey: string | null})
 Rotate the JWT public key for this client
 - `clientSecret: string` - The client secret used to authenticate the current client
 - `jwtPublicKey: string | null` - The new JWT public key
 
-# Stream-sea-client Documentation
+#### subscribe(args: Remote & Stream & {clientSecret: string, fanout?: boolean})
+Subscribe to a single stream indefinitely using basic authentication
+- `clientSecret: string` - The client secret used to authenticate the current client
+- `fanout?: boolean` - If true, compete for messages with other instances of this client that also have fanout=true
+Note: for a more flexible subscription API use the StreamSeaClient object
+
+#### subscribeWithJwt(args: Remote & Stream & {jwt: string, fanout?: boolean})
+Subscribe to a single stream indefinitely using JWT authentication
+- `clientSecret: string` - The client secret used to authenticate the current client
+- `fanout?: boolean` - If true, compete for messages with other instances of this client that also have fanout=true
+Note: for a more flexible subscription API use the StreamSeaClient object
+
+# Stream-sea-client Developer Documentation
 
 ## Stream-sea wire protocol
 

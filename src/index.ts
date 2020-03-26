@@ -77,7 +77,7 @@ export const describeStream = async (args: Remote & Stream & {clientSecret: stri
   return await request(a)
 }
 
-export const getSchemaVersionsVector = async (args: Remote & { clientSecret: string } & {schemaNames: string[]}) => {
+export const getSchemaVersionsVector = async (args: Remote & { clientSecret: string, schemaNames: string[]}) => {
   return (await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/schema-versions-vector`,
     headers: {
@@ -131,7 +131,7 @@ export const rotateClientSecret = async (args: Remote & { clientSecret: string }
   })
 }
 
-export const rotateClientJwtPublicKey = async (args: Remote & { clientSecret: string } & {jwtPublicKey: string | null}) => {
+export const rotateClientJwtPublicKey = async (args: Remote & { clientSecret: string, jwtPublicKey: string | null}) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}/jwt-public-key`,
     headers: {
