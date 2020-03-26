@@ -17,7 +17,7 @@ export declare const defineStream: (args: Remote & Stream & {
 } & SchemaDefinition) => Promise<any>;
 export declare const describeStream: (args: Remote & Stream & {
     clientSecret: string;
-} & SchemaDefinition) => Promise<any>;
+}) => Promise<any>;
 export declare const createClient: (args: Remote & {
     clientSecret: string;
     description: string;

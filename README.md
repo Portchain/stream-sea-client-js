@@ -3,9 +3,89 @@ An isomorphic client library for stream-sea
 # Compatibility
 This library is compatible with stream-sea ^4.0 (i.e. 4.0 <= stream-sea < 5.0)
 
-# For users
+# Stream-sea-client API Documentation
 
-# For developers
+#### interface Remote
+The `Remote` interface identifies a remote stream-sea server and transport-level connection options. All API methods require a `Remote` as part of their args.
+The `Remote` interface has the following fields:
+- `remoteServerHost: string` - The DNS name of the remote server
+- `remoteServerPort: string` - The port of the remote server
+- `secure: boolean` - If true, TLS is used on the transport layer (HTTPS/WSS instead of HTTP/WS)
+- `clientId: string` - The client ID
+
+#### interface SchemaDefinition
+The `SchemaDefinition` interface defines a schema for a stream.
+The `SchemaDefinition` interface has the following fields:
+- `name: string` - The name of the schema. Currently the name of the schema must be equal to the name of the stream.
+- `version: number` - The version number of the schema.
+- `fields: SchemaField[]` - The set of fields in the schema. Fields are treated as an unordered set, so the order of this array does not matter.
+
+#### interface SchemaField
+The `SchemaField` interface defines a single field in a schema.
+The `SchemaField` interface has the following fields:
+- `name: string` - The name of the field
+- `type: FieldType` - The type of the field
+
+The following field types are supported:
+- `FieldType.STRING` - Any string
+- `FieldType.FLOAT` - Any JSON-serializable floating point value
+- `FieldType.INTEGER` - Any JSON-serializable integer
+- `FieldType.DATE` - A UTC date string in the format "YYYY-MM-DDTHH:mm:ssZ"
+- `FieldType.STRING_ARRAY` - An array of `FieldType.STRING`
+- `FieldType.FLOAT_ARRAY` - An array of `FieldType.FLOAT`
+- `FieldType.INTEGER_ARRAY` - An array of `FieldType.INTEGER`
+- `FieldType.DATE_ARRAY` - An array of `FieldType.DATE`
+- `FieldType.ENUM` - A string restricted to a finite set of values. A `SchemaField` of type `FieldType.ENUM` will have an `enum` field of type `string[]` listing the allowed values.
+- `FieldType.OBJECT` - A JSON object. A `SchemaField` of type `FieldType.ENUM` will have a `fields` field of type `SchemaField[]`. This allows you to nest schema definitions.
+- `FieldType.OBJECT_ARRAY` - An array of `FieldType.OBJECT`
+
+#### publish(args: Remote & {stream: string, clientSecret: string, payload: any})
+Publish a message to a stream.
+- `stream: string` - The name of the stream to publish to
+- `clientSecret: string` - The client secret used to authenticate the client
+- `payload: any` - The message payload to send
+
+#### describeStream(args: Remote & {stream: string, clientSecret: string})
+Read a schema definition for a stream
+- `stream: string` - The name of the stream
+- `clientSecret: string` - The client secret used to authenticate the client
+
+#### defineStream(args: Remote & Stream & {clientSecret: string} & SchemaDefinition)
+Write a schema definition for a stream
+- `stream: string` - The name of the stream
+- `clientSecret: string` - The client secret used to authenticate the client
+If a schema definition with the same name and version number already exists, the existing definition will not be overwritten.
+The returned promise will resolve if the new definition is the same as the existing definition, and reject otherwise.
+
+#### getSchemaVersionsVector
+Read the version numbers for multiple streams
+- `clientSecret: string` - The client secret used to authenticate the client
+- `schemaNames: string[]` - The names of the streams
+This function will return an array `retVal` with the same length as `schemaNames`. For every `i`, if the stream with name `schemaNames[i]` exists, then the value of `retVal[i]` will be that stream's version number. If the stream with name `schemaNames[i]` does not exist, then the value of `retVal[i]` will be `null`.
+
+#### createClient
+Create another client in the same jail
+- `clientSecret: string` - The client secret used to authenticate the current client
+- `targetClientId: string` - The client ID of the new client
+- `targetClientDescription: string` - The description of the new client
+The client secret will be generated on the server and returned in the `secret` field of the result.
+
+#### deleteClient
+Delete another client in the same jail
+- `clientSecret: string` - The client secret used to authenticate the current client
+- `targetClientId: string` - The client ID of the client to delete
+
+#### rotateClientSecret
+Rotate the client secret for this client
+- `clientSecret: string` - The client secret used to authenticate the current client
+The new client secret will be generated on the server and returned in the `secret` field of the result.
+
+#### rotateClientJwtPublicKey
+Rotate the JWT public key for this client
+- `clientSecret: string` - The client secret used to authenticate the current client
+- `jwtPublicKey: string | null` - The new JWT public key
+
+# Stream-sea-client Documentation
 
 ## Stream-sea wire protocol
 
