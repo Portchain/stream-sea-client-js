@@ -18,27 +18,25 @@ export declare const defineStream: (args: Remote & Stream & {
 export declare const describeStream: (args: Remote & Stream & {
     clientSecret: string;
 }) => Promise<any>;
+export declare const getSchemaVersionsVector: (args: Remote & {
+    clientSecret: string;
+} & {
+    schemaNames: string[];
+}) => Promise<any>;
 export declare const createClient: (args: Remote & {
     clientSecret: string;
-    description: string;
+    targetClientId: string;
+    targetClientDescription: string;
 }) => Promise<any>;
 export declare const deleteClient: (args: Remote & {
     clientSecret: string;
-    clientId: string;
+    targetClientId: string;
 }) => Promise<any>;
 export declare const rotateClientSecret: (args: Remote & {
     clientSecret: string;
-    clientId: string;
 }) => Promise<any>;
 export declare const rotateClientJwtPublicKey: (args: Remote & {
     clientSecret: string;
-    clientId: string;
 } & {
     jwtPublicKey: string | null;
-}) => Promise<any>;
-export declare const getSchemaVersionsVector: (args: Remote & {
-    clientSecret: string;
-    clientId: string;
-} & {
-    schemaNames: string[];
 }) => Promise<any>;
