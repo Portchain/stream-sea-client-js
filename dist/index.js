@@ -75,6 +75,19 @@ exports.describeStream = async (args) => {
     };
     return await request_promise_native_1.default(a);
 };
+exports.getSchemaVersionsVector = async (args) => {
+    return (await request_promise_native_1.default({
+        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/schema-versions-vector`,
+        headers: {
+            'content-type': 'application/json',
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+        },
+        method: 'POST',
+        gzip: true,
+        json: true,
+        body: { schemaNames: args.schemaNames },
+    })).versionsVector;
+};
 exports.createClient = async (args) => {
     return await request_promise_native_1.default({
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
@@ -85,12 +98,12 @@ exports.createClient = async (args) => {
         method: 'POST',
         gzip: true,
         json: true,
-        body: { description: args.description },
+        body: { clientId: args.targetClientId, description: args.targetClientDescription },
     });
 };
 exports.deleteClient = async (args) => {
     return await request_promise_native_1.default({
-        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.clientId}`,
+        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client/${args.targetClientId}`,
         headers: {
             'content-type': 'application/json',
             authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
@@ -124,17 +137,4 @@ exports.rotateClientJwtPublicKey = async (args) => {
         json: true,
         body: { jwtPublicKey: args.jwtPublicKey },
     });
-};
-exports.getSchemaVersionsVector = async (args) => {
-    return (await request_promise_native_1.default({
-        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/schema-versions-vector`,
-        headers: {
-            'content-type': 'application/json',
-            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
-        },
-        method: 'POST',
-        gzip: true,
-        json: true,
-        body: { schemaNames: args.schemaNames },
-    })).versionsVector;
 };
