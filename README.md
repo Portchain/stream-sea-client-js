@@ -266,7 +266,9 @@ at least every 30 seconds to avoid idle connections being closed
 
 ### Message Delivery
 - A Message Delivery message has an `action` field with value `"subscribe"`
-- A Message Delivery message has a `payload` field of JSON type `object`. This value of this field is the user-defined message object.
+- A Message Delivery message has a `payload` field of JSON type `object` or `array`.
+  - If the `payload` field has type `object`, its value is a single user-defined message object.
+  - If the `payload` field has type `array`, its value is an array of user-defined message objects which were published in a single batch.
 
 ### Example of stream-sea wire protocol exchange
 
