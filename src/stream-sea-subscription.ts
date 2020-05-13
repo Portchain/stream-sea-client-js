@@ -1,7 +1,12 @@
 import { EventEmitter } from 'events'
 
+export interface StreamSeaSubscriptionOptions {
+  streamName: string
+  debatch?: boolean // defaults to true
+}
 export interface IStreamSeaSubscription extends EventEmitter {
   streamName: string
+  handleMessageOrBatch: (messageOrBatch: any) => void
 }
 
 /**
@@ -13,8 +18,21 @@ export interface IStreamSeaSubscription extends EventEmitter {
  */
 export class StreamSeaSubscription extends EventEmitter implements IStreamSeaSubscription {
   public streamName: string
-  constructor(streamName: string) {
+  private debatch: boolean
+  constructor(opts: StreamSeaSubscriptionOptions) {
     super()
-    this.streamName = streamName
+    this.streamName = opts.streamName
+    this.debatch = opts.debatch === false ? false : true // defaults to true
+  }
+  public handleMessageOrBatch = (messageOrBatch: any) => {
+    if (this.debatch && Array.isArray(messageOrBatch)) {
+      // Debatch
+      messageOrBatch.forEach(message => {
+        this.emit('message', message)
+      })
+    } else {
+      // Don't debatch
+      this.emit('message', messageOrBatch)
+    }
   }
 }

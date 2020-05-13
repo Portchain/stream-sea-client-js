@@ -210,7 +210,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
             reject: (e: any) => this.onSocketError(e),
           },
           {
-            resolve: (m: any) => subscription.emit('message', m),
+            resolve: (m: any) => subscription.handleMessageOrBatch(m),
             reject: (e: any) => this.onSocketError(e),
           }
         )

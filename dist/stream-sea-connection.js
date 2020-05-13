@@ -156,7 +156,7 @@ class StreamSeaConnection extends events_1.EventEmitter {
                     },
                     reject: (e) => this.onSocketError(e),
                 }, {
-                    resolve: (m) => subscription.emit('message', m),
+                    resolve: (m) => subscription.handleMessageOrBatch(m),
                     reject: (e) => this.onSocketError(e),
                 });
             });

@@ -116,7 +116,7 @@ describe('StreamSeaConnection', () => {
       socketFactory,
       groupId: undefined,
     })
-    const subscription = new StreamSeaSubscription('testStream')
+    const subscription = new StreamSeaSubscription({ streamName: 'testStream' })
     connection.addSubscription(subscription)
     setTimeout(() => {
       // Verify a socket was created
@@ -147,7 +147,7 @@ describe('StreamSeaConnection', () => {
       socketFactory,
       groupId: '00000000-0000-0000-000000001234',
     })
-    const subscription = new StreamSeaSubscription('testStream')
+    const subscription = new StreamSeaSubscription({ streamName: 'testStream' })
     connection.addSubscription(subscription)
     setTimeout(() => {
       // Verify a socket was created
@@ -178,7 +178,7 @@ describe('StreamSeaConnection', () => {
       socketFactory,
       groupId: undefined,
     })
-    const subscription = new StreamSeaSubscription('testStream')
+    const subscription = new StreamSeaSubscription({ streamName: 'testStream' })
     connection.addSubscription(subscription)
     // Verify the correct error is thrown
     const errorHandler = jest.fn((e: StreamSeaConnectionError) => expect(e.type).toBe('AuthenticationError'))
@@ -207,7 +207,7 @@ describe('StreamSeaConnection', () => {
       socketFactory,
       groupId: undefined,
     })
-    const subscription = new StreamSeaSubscription('testStream')
+    const subscription = new StreamSeaSubscription({ streamName: 'testStream' })
     connection.addSubscription(subscription)
     setTimeout(() => {
       // Verify a socket was created

@@ -9,9 +9,22 @@ const events_1 = require("events");
  *   message
  */
 class StreamSeaSubscription extends events_1.EventEmitter {
-    constructor(streamName) {
+    constructor(opts) {
         super();
-        this.streamName = streamName;
+        this.handleMessageOrBatch = (messageOrBatch) => {
+            if (this.debatch && Array.isArray(messageOrBatch)) {
+                // Debatch
+                messageOrBatch.forEach(message => {
+                    this.emit('message', message);
+                });
+            }
+            else {
+                // Don't debatch
+                this.emit('message', messageOrBatch);
+            }
+        };
+        this.streamName = opts.streamName;
+        this.debatch = opts.debatch === false ? false : true; // defaults to true
     }
 }
 exports.StreamSeaSubscription = StreamSeaSubscription;

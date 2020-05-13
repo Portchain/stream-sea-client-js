@@ -75,7 +75,7 @@ describe('StreamSeaClient', () => {
             secure: false,
             connectionFactory,
         });
-        const testSubscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
+        const testSubscription = new stream_sea_subscription_1.StreamSeaSubscription({ streamName: 'testStream' });
         client.addSubscription(testSubscription);
         setTimeout(() => {
             // Verify that a connection was created
@@ -100,7 +100,7 @@ describe('StreamSeaClient', () => {
             secure: false,
             connectionFactory,
         });
-        const testSubscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
+        const testSubscription = new stream_sea_subscription_1.StreamSeaSubscription({ streamName: 'testStream' });
         client.RECONNECT_INTERVAL_MS = 1;
         client.addSubscription(testSubscription);
         setTimeout(() => {

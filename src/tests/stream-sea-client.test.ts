@@ -1,21 +1,21 @@
 import { IStreamSeaConnection, IStreamSeaConnectionFactory } from '../stream-sea-connection'
 import { EventEmitter } from 'events'
 import { StreamSeaClient } from '../stream-sea-client'
-import { StreamSeaSubscription } from '../stream-sea-subscription'
+import { StreamSeaSubscription, IStreamSeaSubscription } from '../stream-sea-subscription'
 
 class GoodConnection extends EventEmitter implements IStreamSeaConnection {
-  public addSubscription: (subscription: StreamSeaSubscription) => void
+  public addSubscription: (subscription: IStreamSeaSubscription) => void
   public close = () => undefined
-  constructor(addSubscription: (subscription: StreamSeaSubscription) => void) {
+  constructor(addSubscription: (subscription: IStreamSeaSubscription) => void) {
     super()
     this.addSubscription = addSubscription
   }
 }
 
 class UnconnectableConnection extends EventEmitter implements IStreamSeaConnection {
-  public addSubscription: (subscription: StreamSeaSubscription) => void
+  public addSubscription: (subscription: IStreamSeaSubscription) => void
   public close = () => undefined
-  constructor(addSubscription: (subscription: StreamSeaSubscription) => void) {
+  constructor(addSubscription: (subscription: IStreamSeaSubscription) => void) {
     super()
     this.addSubscription = addSubscription
     setTimeout(() => {
@@ -30,8 +30,8 @@ class UnconnectableConnection extends EventEmitter implements IStreamSeaConnecti
  */
 class GoodConnectionFactory implements IStreamSeaConnectionFactory {
   public tries = 0
-  public addSubscription: (subscription: StreamSeaSubscription) => void
-  constructor(addSubscription: (subscription: StreamSeaSubscription) => void) {
+  public addSubscription: (subscription: IStreamSeaSubscription) => void
+  constructor(addSubscription: (subscription: IStreamSeaSubscription) => void) {
     this.addSubscription = addSubscription
   }
   createConnection = () => {
@@ -49,8 +49,8 @@ class GoodConnectionFactory implements IStreamSeaConnectionFactory {
  */
 class ThirdTimeLuckyConnectionFactory implements IStreamSeaConnectionFactory {
   public tries = 0
-  public addSubscription: (subscription: StreamSeaSubscription) => void
-  constructor(addSubscription: (subscription: StreamSeaSubscription) => void) {
+  public addSubscription: (subscription: IStreamSeaSubscription) => void
+  constructor(addSubscription: (subscription: IStreamSeaSubscription) => void) {
     this.addSubscription = addSubscription
   }
   createConnection = () => {
@@ -80,7 +80,7 @@ describe('StreamSeaClient', () => {
       secure: false,
       connectionFactory,
     })
-    const testSubscription = new StreamSeaSubscription('testStream')
+    const testSubscription = new StreamSeaSubscription({ streamName: 'testStream' })
     client.addSubscription(testSubscription)
 
     setTimeout(() => {
@@ -106,7 +106,7 @@ describe('StreamSeaClient', () => {
       secure: false,
       connectionFactory,
     })
-    const testSubscription = new StreamSeaSubscription('testStream')
+    const testSubscription = new StreamSeaSubscription({ streamName: 'testStream' })
     ;(client as any).RECONNECT_INTERVAL_MS = 1
     client.addSubscription(testSubscription)
 

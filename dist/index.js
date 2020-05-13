@@ -18,7 +18,7 @@ exports.subscribe = async (args) => {
             clientSecret: args.clientSecret,
         },
     });
-    const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
+    const subscription = new stream_sea_subscription_1.StreamSeaSubscription({ streamName: args.stream });
     client.addSubscription(subscription);
     return subscription;
 };
@@ -32,7 +32,7 @@ exports.subscribeWithJwt = async (args) => {
             jwt: args.jwt,
         },
     });
-    const subscription = new stream_sea_subscription_1.StreamSeaSubscription(args.stream);
+    const subscription = new stream_sea_subscription_1.StreamSeaSubscription({ streamName: args.stream });
     client.addSubscription(subscription);
     return subscription;
 };

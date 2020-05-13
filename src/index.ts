@@ -15,7 +15,7 @@ export const subscribe = async (args: Remote & Stream & { clientSecret: string; 
       clientSecret: args.clientSecret,
     },
   })
-  const subscription = new StreamSeaSubscription(args.stream)
+  const subscription = new StreamSeaSubscription({ streamName: args.stream })
   client.addSubscription(subscription)
   return subscription
 }
@@ -30,7 +30,7 @@ export const subscribeWithJwt = async (args: Remote & Stream & { jwt: string; fa
       jwt: args.jwt,
     },
   })
-  const subscription = new StreamSeaSubscription(args.stream)
+  const subscription = new StreamSeaSubscription({ streamName: args.stream })
   client.addSubscription(subscription)
   return subscription
 }
