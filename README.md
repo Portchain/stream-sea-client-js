@@ -1,7 +1,7 @@
 An isomorphic client library for stream-sea
 
 # Compatibility
-This library is compatible with stream-sea ^4.0 (i.e. 4.0 <= stream-sea < 5.0)
+This library is compatible with stream-sea versions 4.0 <= x < 6.0
 
 # API Reference
 
@@ -242,10 +242,12 @@ at least every 30 seconds to avoid idle connections being closed
   - A `type` field with value `"basic"`
   - A `clientId` field of JSON type `string`
   - A `clientSecret` field of JSON type `string`
+  - A `groupId` field of JSON type `string`
 - In order to authenticate with the Basic method, the `payload` of the Authentication Request message must have the following fields:
   - A `type` field with value `"jwt"`
   - A `clientId` field of JSON type `string`
   - A `jwt` field of JSON type `string` containing the stream-sea JWT
+  - A `groupId` field of JSON type `string`
 - The server must respond to an Authentication Request message with exactly one Authentication Response message
 
 ### Authentication Response Message
@@ -280,7 +282,8 @@ StreamSeaSocket.send {
   "payload": {
     "type": "basic"
     "clientId": "abc",
-    "clientSecret": "def123"
+    "clientSecret": "def123",
+    "groupId": "00000000-0000-0000-0000-000000000001"
   }
 }
 
