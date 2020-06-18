@@ -36,11 +36,13 @@ class StreamSeaConnection extends events_1.EventEmitter {
                     type: 'jwt',
                     clientId: this.options.credentialOptions.clientId,
                     jwt: this.options.credentialOptions.jwt,
+                    groupId: this.options.groupId,
                 }
                 : {
                     type: 'basic',
                     clientId: this.options.credentialOptions.clientId,
                     clientSecret: this.options.credentialOptions.clientSecret,
+                    groupId: this.options.groupId,
                 };
             this.sendAndExpectSingleReply('authenticate', authPayload)
                 .then(() => {

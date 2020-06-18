@@ -96,11 +96,13 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
             type: 'jwt',
             clientId: this.options.credentialOptions.clientId,
             jwt: this.options.credentialOptions.jwt,
+            groupId: this.options.groupId,
           }
         : {
             type: 'basic',
             clientId: this.options.credentialOptions.clientId,
             clientSecret: this.options.credentialOptions.clientSecret,
+            groupId: this.options.groupId,
           }
 
     this.sendAndExpectSingleReply('authenticate', authPayload)
