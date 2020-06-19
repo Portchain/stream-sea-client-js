@@ -9,6 +9,7 @@ import { getHttpURLScheme } from './utils'
 export const subscribe = async (args: Remote & Stream & { clientSecret: string; fanout?: boolean }) => {
   const client = getStreamSeaClient({
     ...args,
+    fanout: !!args.fanout,
     credentialOptions: {
       type: 'basic',
       clientId: args.clientId,
@@ -24,6 +25,7 @@ export const subscribe = async (args: Remote & Stream & { clientSecret: string; 
 export const subscribeWithJwt = async (args: Remote & Stream & { jwt: string; fanout?: boolean }) => {
   const client = getStreamSeaClient({
     ...args,
+    fanout: !!args.fanout,
     credentialOptions: {
       type: 'jwt',
       clientId: args.clientId,

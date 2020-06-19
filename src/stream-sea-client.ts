@@ -11,7 +11,7 @@ type StreamSeaClientOptions = {
   remoteServerPort: string
   secure: boolean
   credentialOptions: CredentialOptions
-  fanout?: boolean
+  fanout: boolean
 }
 
 /**
@@ -30,17 +30,15 @@ export class StreamSeaClient extends EventEmitter {
   private RECONNECT_INTERVAL_MS = 3000
   private CONNECTION_FAILURE_ALERT_THRESHOLD = 20 // Log an error after this many consecutive failures
   private consecutiveConnectionFailures = 0
-  private groupId: string | undefined
   private isDestroyed: boolean = false
 
   constructor(options: StreamSeaClientOptions & { connectionFactory: IStreamSeaConnectionFactory }) {
     super()
     this.options = options
-    this.groupId = options.fanout ? uuid() : undefined
     this.connection = options.connectionFactory.createConnection({
       url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
       credentialOptions: options.credentialOptions,
-      groupId: this.groupId,
+      fanout: options.fanout,
     })
     this.attachConnectionEventHandlers()
   }
@@ -83,7 +81,7 @@ export class StreamSeaClient extends EventEmitter {
     this.connection = this.options.connectionFactory.createConnection({
       url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
       credentialOptions: this.options.credentialOptions,
-      groupId: this.groupId,
+      fanout: this.options.fanout,
     })
     this.attachConnectionEventHandlers()
     this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription))

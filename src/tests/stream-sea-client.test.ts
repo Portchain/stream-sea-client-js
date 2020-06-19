@@ -78,6 +78,7 @@ describe('StreamSeaClient', () => {
       remoteServerHost: 'mockHost',
       remoteServerPort: '101',
       secure: false,
+      fanout: false,
       connectionFactory,
     })
     const testSubscription = new StreamSeaSubscription('testStream')
@@ -104,6 +105,7 @@ describe('StreamSeaClient', () => {
       remoteServerHost: 'mockHost',
       remoteServerPort: '101',
       secure: false,
+      fanout: false,
       connectionFactory,
     })
     const testSubscription = new StreamSeaSubscription('testStream')

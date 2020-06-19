@@ -2,6 +2,7 @@ import { EventEmitter } from 'events'
 import { IStreamSeaSubscription } from './stream-sea-subscription'
 import { IStreamSeaSocket, IStreamSeaSocketFactory, StreamSeaSocketFactory } from './stream-sea-socket'
 import { CredentialOptions } from './types'
+import uuid from 'uuid-random'
 
 interface PromiseProxy {
   reject: (err: any) => void
@@ -16,7 +17,7 @@ export interface IStreamSeaConnection extends EventEmitter {
 export interface StreamSeaConnectionOptions {
   url: string
   credentialOptions: CredentialOptions
-  groupId: string | undefined
+  fanout: boolean
 }
 
 export enum StreamSeaConnectionStatus {
@@ -193,6 +194,10 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
     return ++this.msgCnt
   }
 
+  private getGroupId(): string | undefined {
+    return this.options.fanout ? uuid() : undefined
+  }
+
   /**
    * Send out queued subscriptions if possible
    */
@@ -202,7 +207,7 @@ export class StreamSeaConnection extends EventEmitter implements IStreamSeaConne
         this.sendAndExpectMultiReply(
           'subscribe',
           subscription.streamName,
-          this.options.groupId,
+          this.getGroupId(),
           {
             resolve: (m: any) => {
               return
