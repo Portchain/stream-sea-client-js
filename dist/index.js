@@ -12,7 +12,6 @@ const utils_1 = require("./utils");
 exports.subscribe = async (args) => {
     const client = stream_sea_client_1.getStreamSeaClient({
         ...args,
-        fanout: !!args.fanout,
         credentialOptions: {
             type: 'basic',
             clientId: args.clientId,
@@ -27,7 +26,6 @@ exports.subscribe = async (args) => {
 exports.subscribeWithJwt = async (args) => {
     const client = stream_sea_client_1.getStreamSeaClient({
         ...args,
-        fanout: !!args.fanout,
         credentialOptions: {
             type: 'jwt',
             clientId: args.clientId,

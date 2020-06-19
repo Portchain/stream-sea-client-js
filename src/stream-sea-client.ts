@@ -11,7 +11,7 @@ type StreamSeaClientOptions = {
   remoteServerPort: string
   secure: boolean
   credentialOptions: CredentialOptions
-  fanout: boolean
+  fanout?: boolean
 }
 
 /**
@@ -38,7 +38,7 @@ export class StreamSeaClient extends EventEmitter {
     this.connection = options.connectionFactory.createConnection({
       url: `${getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
       credentialOptions: options.credentialOptions,
-      fanout: options.fanout,
+      fanout: !!options.fanout,
     })
     this.attachConnectionEventHandlers()
   }
@@ -81,7 +81,7 @@ export class StreamSeaClient extends EventEmitter {
     this.connection = this.options.connectionFactory.createConnection({
       url: `${getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
       credentialOptions: this.options.credentialOptions,
-      fanout: this.options.fanout,
+      fanout: !!this.options.fanout,
     })
     this.attachConnectionEventHandlers()
     this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription))

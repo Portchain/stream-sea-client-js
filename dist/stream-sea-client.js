@@ -63,7 +63,7 @@ class StreamSeaClient extends events_1.EventEmitter {
             this.connection = this.options.connectionFactory.createConnection({
                 url: `${utils_1.getWsURLScheme(this.options.secure)}://${this.options.remoteServerHost}:${this.options.remoteServerPort}/api/v1/streams`,
                 credentialOptions: this.options.credentialOptions,
-                fanout: this.options.fanout,
+                fanout: !!this.options.fanout,
             });
             this.attachConnectionEventHandlers();
             this.subscriptions.forEach(subscription => this.connection.addSubscription(subscription));
@@ -83,7 +83,7 @@ class StreamSeaClient extends events_1.EventEmitter {
         this.connection = options.connectionFactory.createConnection({
             url: `${utils_1.getWsURLScheme(options.secure)}://${options.remoteServerHost}:${options.remoteServerPort}/api/v1/streams`,
             credentialOptions: options.credentialOptions,
-            fanout: options.fanout,
+            fanout: !!options.fanout,
         });
         this.attachConnectionEventHandlers();
     }

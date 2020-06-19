@@ -8,7 +8,7 @@ declare type StreamSeaClientOptions = {
     remoteServerPort: string;
     secure: boolean;
     credentialOptions: CredentialOptions;
-    fanout: boolean;
+    fanout?: boolean;
 };
 /**
  * A StreamSeaClient manages a StreamSeaConnection, restarting it if necessary
