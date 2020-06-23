@@ -122,7 +122,7 @@ describe('StreamSeaConnection', () => {
                 clientSecret: 'test_client_secret',
             },
             socketFactory,
-            groupId: undefined,
+            fanout: false,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);
@@ -143,7 +143,7 @@ describe('StreamSeaConnection', () => {
             socketFactory.sockets[0].emitSubscriptionMessage();
         }, 1000);
     });
-    it('positive: Basic auth with custom groupId', done => {
+    it('positive: Basic auth with fanout', done => {
         const socketFactory = new BasicSocketFactory();
         const connection = new stream_sea_connection_1.StreamSeaConnection({
             url: 'test_url',
@@ -153,15 +153,16 @@ describe('StreamSeaConnection', () => {
                 clientSecret: 'test_client_secret',
             },
             socketFactory,
-            groupId: '00000000-0000-0000-000000001234',
+            fanout: true,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);
         setTimeout(() => {
             // Verify a socket was created
             expect(socketFactory.sockets.length).toBe(1);
-            // Verify the groupId is undefined
-            expect(socketFactory.sockets[0].groupId).toBe('00000000-0000-0000-000000001234');
+            // Verify the groupId is a UUID
+            expect(socketFactory.sockets[0].groupId).toBeTruthy();
+            expect(socketFactory.sockets[0].groupId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/g)).toBeTruthy();
             // Verify that all send callbacks have been called
             expect(socketFactory.sockets[0].sendCallbacks.length).toBe(0);
             // Verify that the connection is open
@@ -184,7 +185,7 @@ describe('StreamSeaConnection', () => {
                 clientSecret: 'wrong_secret',
             },
             socketFactory,
-            groupId: undefined,
+            fanout: false,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);
@@ -213,7 +214,7 @@ describe('StreamSeaConnection', () => {
                 jwt: 'test.client.jwt',
             },
             socketFactory,
-            groupId: undefined,
+            fanout: false,
         });
         const subscription = new stream_sea_subscription_1.StreamSeaSubscription('testStream');
         connection.addSubscription(subscription);

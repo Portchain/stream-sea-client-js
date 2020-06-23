@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const stream_sea_socket_1 = require("./stream-sea-socket");
+const uuid_random_1 = __importDefault(require("uuid-random"));
 var StreamSeaConnectionStatus;
 (function (StreamSeaConnectionStatus) {
     StreamSeaConnectionStatus["init"] = "init";
@@ -144,13 +148,16 @@ class StreamSeaConnection extends events_1.EventEmitter {
     generateNextMessageId() {
         return ++this.msgCnt;
     }
+    getGroupId() {
+        return this.options.fanout ? uuid_random_1.default() : undefined;
+    }
     /**
      * Send out queued subscriptions if possible
      */
     checkSubscriptionsQueue() {
         if (this.status === StreamSeaConnectionStatus.open) {
             this.subscriptionsQueue.forEach(subscription => {
-                this.sendAndExpectMultiReply('subscribe', subscription.streamName, this.options.groupId, {
+                this.sendAndExpectMultiReply('subscribe', subscription.streamName, this.getGroupId(), {
                     resolve: (m) => {
                         return;
                     },

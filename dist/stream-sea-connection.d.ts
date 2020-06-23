@@ -10,7 +10,7 @@ export interface IStreamSeaConnection extends EventEmitter {
 export interface StreamSeaConnectionOptions {
     url: string;
     credentialOptions: CredentialOptions;
-    groupId: string | undefined;
+    fanout: boolean;
 }
 export declare enum StreamSeaConnectionStatus {
     init = "init",
@@ -60,6 +60,7 @@ export declare class StreamSeaConnection extends EventEmitter implements IStream
     private onSocketClose;
     private onSocketError;
     private generateNextMessageId;
+    private getGroupId;
     /**
      * Send out queued subscriptions if possible
      */
