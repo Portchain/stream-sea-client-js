@@ -162,7 +162,7 @@ describe('StreamSeaConnection', () => {
             expect(socketFactory.sockets.length).toBe(1);
             // Verify the groupId is a UUID
             expect(socketFactory.sockets[0].groupId).toBeTruthy();
-            expect(socketFactory.sockets[0].groupId.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g)).toBeTruthy();
+            expect(socketFactory.sockets[0].groupId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/g)).toBeTruthy();
             // Verify that all send callbacks have been called
             expect(socketFactory.sockets[0].sendCallbacks.length).toBe(0);
             // Verify that the connection is open
