@@ -88,6 +88,38 @@ exports.getSchemaVersionsVector = async (args) => {
         body: { schemaNames: args.schemaNames },
     })).versionsVector;
 };
+exports.createJail = async (args) => {
+    return await request_promise_native_1.default({
+        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
+        headers: {
+            'content-type': 'application/json',
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+        },
+        method: 'POST',
+        gzip: true,
+        json: true,
+        body: {
+            newJailId: args.targetJailId,
+            newJailName: args.targetJailName,
+            newClientId: args.targetClientId,
+        },
+    });
+};
+exports.deleteJail = async (args) => {
+    return await request_promise_native_1.default({
+        url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
+        headers: {
+            'content-type': 'application/json',
+            authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+        },
+        method: 'POST',
+        gzip: true,
+        json: true,
+        body: {
+            newJailId: args.targetJailId,
+        },
+    });
+};
 exports.createClient = async (args) => {
     return await request_promise_native_1.default({
         url: `${utils_1.getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,

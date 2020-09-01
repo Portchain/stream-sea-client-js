@@ -22,6 +22,16 @@ export declare const getSchemaVersionsVector: (args: Remote & {
     clientSecret: string;
     schemaNames: string[];
 }) => Promise<any>;
+export declare const createJail: (args: Remote & {
+    clientSecret: string;
+    targetJailId: string;
+    targetJailName: string;
+    targetClientId: string;
+}) => Promise<any>;
+export declare const deleteJail: (args: Remote & {
+    clientSecret: string;
+    targetJailId: string;
+}) => Promise<any>;
 export declare const createClient: (args: Remote & {
     clientSecret: string;
     targetClientId: string;
