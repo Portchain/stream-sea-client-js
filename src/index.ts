@@ -93,6 +93,37 @@ export const getSchemaVersionsVector = async (args: Remote & { clientSecret: str
   ).versionsVector
 }
 
+export const createJail = async (args: Remote & { clientSecret: string; targetJailId: string; targetJailName: string; targetClientId: string }) => {
+  return await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/jails`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'POST',
+    gzip: true,
+    json: true,
+    body: {
+      newJailId: args.targetJailId,
+      newJailName: args.targetJailName,
+      newClientId: args.targetClientId,
+    },
+  })
+}
+
+export const deleteJail = async (args: Remote & { clientSecret: string; targetJailId: string }) => {
+  return await request({
+    url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/jails/${args.targetJailId}`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: 'Basic ' + Buffer.from(`${args.clientId}:${args.clientSecret}`).toString('base64'),
+    },
+    method: 'DELETE',
+    gzip: true,
+    json: true,
+  })
+}
+
 export const createClient = async (args: Remote & { clientSecret: string; targetClientId: string; targetClientDescription: string }) => {
   return await request({
     url: `${getHttpURLScheme(args.secure)}://${args.remoteServerHost}:${args.remoteServerPort}/api/v1/client`,
